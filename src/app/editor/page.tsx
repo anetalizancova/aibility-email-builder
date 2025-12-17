@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { themes, themeList, ThemeId, Theme } from '@/themes';
+import { themes, themeList, ThemeId } from '@/themes';
 import { EmailWrapper, GradientBox, CTAButton, TextSection } from '@/components/email';
 import { emailWrapperStartHTML, emailWrapperEndHTML } from '@/components/email/EmailWrapper';
 import { gradientBoxToHTML } from '@/components/email/GradientBox';
 import { ctaButtonToHTML } from '@/components/email/CTAButton';
 
-export default function EditorPage() {
+function EditorContent() {
   const searchParams = useSearchParams();
   const initialTheme = (searchParams.get('theme') as ThemeId) || 'light-pink-blue';
   
@@ -259,3 +259,10 @@ ${emailWrapperEndHTML()}`;
   );
 }
 
+export default function EditorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Načítám...</div>}>
+      <EditorContent />
+    </Suspense>
+  );
+}
