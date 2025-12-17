@@ -28,7 +28,7 @@ function EditorContent() {
     reorderBlocks,
     selectBlock,
     duplicateBlock,
-    setGreeting,
+    setTheme,
     setPreheader,
     getSelectedBlock,
   } = useEmailState();
@@ -169,11 +169,11 @@ function EditorContent() {
           
           <BlockSettings
             block={selectedBlock}
-            greeting={state.greeting}
             preheader={state.preheader}
+            currentTheme={state.theme}
             onUpdateBlock={updateBlock}
-            onUpdateGreeting={setGreeting}
             onUpdatePreheader={setPreheader}
+            onUpdateTheme={setTheme}
             onImageUpload={handleImageUpload}
           />
         </div>

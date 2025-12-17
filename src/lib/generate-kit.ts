@@ -5,40 +5,38 @@ import { saveAs } from 'file-saver';
 // README content
 const readmeContent = `# Aibility Email Kit pro Cursor 📧
 
-Kompletní sada pro tvorbu profesionálních HTML emailů s AI asistencí.
+Kompletní sada komponent a pravidel pro tvorbu profesionálních HTML emailů s AI asistencí.
 
 ## 🚀 Quick Start
 
 1. Otevři tuto složku v Cursoru
-2. Řekni AI co potřebuješ: "Vytvoř welcome email pro nového zákazníka"
-3. AI použije šablony a komponenty automaticky
+2. Řekni AI co potřebuješ: "Vytvoř email pro pozvánku na event"
+3. AI použije komponenty a pravidla automaticky
 
 ## 📁 Struktura
 
 \`\`\`
-├── templates/          # Ukázkové emaily
-│   ├── welcome.html
-│   ├── follow-up.html
-│   └── promo.html
 ├── components/         # HTML komponenty
 │   ├── hero-image.html
 │   ├── text-section.html
 │   ├── gradient-box.html
 │   ├── cta-button.html
+│   ├── greeting.html
 │   ├── divider.html
 │   └── footer.html
 ├── .cursorrules        # Pravidla pro AI
 ├── EMAIL_TIPS.md       # Best practices
-└── brand-colors.md     # Barevná paleta
+└── brand-colors.md     # Barevná paleta + themes
 \`\`\`
 
-## 🎨 Brand Colors
+## 🎨 4 Barevné varianty
 
-- **Pink:** #ff7ad9
-- **Blue:** #6a9bff
-- **Orange:** #ffb86b
-- **Background:** #f3f4ff
-- **Text:** #020617
+| Varianta | Popis |
+|----------|-------|
+| Light Pink-Blue | Světlý s růžovo-modrým gradientem |
+| Light Sunset | Světlý s růžovo-modro-oranžovým |
+| Dark Pink-Blue | Tmavý s růžovo-modrým gradientem |
+| Dark Sunset | Tmavý s růžovo-modro-oranžovým |
 
 ## 💡 Tipy pro práci
 
@@ -70,11 +68,27 @@ Při tvorbě HTML emailů VŽDY dodržuj:
 - Sekundární: 'Inter', Arial, sans-serif (text)
 - Fallback fonty jsou POVINNÉ
 
-### 3. Barvy
-- Primary gradient: #ff7ad9 → #6a9bff
-- Sunset gradient: #ffb86b → #ff7ad9  
+### 3. Barvy - 4 varianty
+
+**Light Pink-Blue:**
 - Background: #f3f4ff
+- Container: #ffffff
 - Text: #020617, #334155
+
+**Light Sunset:**
+- Background: #f3f4ff
+- Container: #ffffff
+- Akcent: #ffb86b (orange)
+
+**Dark Pink-Blue:**
+- Background: #0a0a0a
+- Container: #1a1a2e
+- Text: #f8fafc, #94a3b8
+
+**Dark Sunset:**
+- Background: #0a0a0a
+- Container: #1a1a1a
+- Akcent: #ffb86b (orange)
 
 ### 4. Emoji
 NIKDY nepište emoji přímo. VŽDY zabalte do span:
@@ -191,43 +205,80 @@ const emailTipsContent = `# 📧 Email Tips & Best Practices
 - [ ] Personalizace funguje
 `;
 
-// Brand colors content
-const brandColorsContent = `# 🎨 Aibility Brand Colors
+// Brand colors content with themes
+const brandColorsContent = `# 🎨 Aibility Brand Colors & Themes
 
-## Primary Colors
+## 4 Barevné varianty
 
-| Název | HEX | RGB | Použití |
-|-------|-----|-----|---------|
-| Pink | #ff7ad9 | 255, 122, 217 | Gradient, akcenty |
-| Blue | #6a9bff | 106, 155, 255 | Gradient, linky |
-| Orange | #ffb86b | 255, 184, 107 | Sunset gradient |
-
-## Neutral Colors
-
-| Název | HEX | Použití |
-|-------|-----|---------|
-| Background | #f3f4ff | Pozadí emailu |
-| Dark | #020617 | Nadpisy |
-| Text | #334155 | Běžný text |
-| Muted | #64748b | Patička |
-
-## Gradienty
-
-### Pink-Blue (Primary)
+### Light Pink-Blue (výchozí)
 \`\`\`css
+/* Background */
+background: #f3f4ff;
+container: #ffffff;
+
+/* Text */
+primary: #020617;
+secondary: #334155;
+muted: #64748b;
+
+/* Gradient */
 background: linear-gradient(135deg, #ff7ad9 0%, #6a9bff 100%);
 \`\`\`
 
-### Sunset
+### Light Sunset
 \`\`\`css
-background: linear-gradient(135deg, #ffb86b 0%, #ff7ad9 100%);
+/* Background */
+background: #f3f4ff;
+container: #ffffff;
+box: #fffbf5;
+
+/* Text */
+primary: #020617;
+secondary: #334155;
+
+/* Gradient */
+background: linear-gradient(135deg, #ff7ad9 0%, #6a9bff 50%, #ffb86b 100%);
 \`\`\`
 
-### Box Background (Pink-Blue)
+### Dark Pink-Blue
 \`\`\`css
-background: linear-gradient(135deg, rgba(255,122,217,0.15) 0%, rgba(106,155,255,0.15) 100%);
-border: 1px solid rgba(255,122,217,0.3);
+/* Background */
+background: #0a0a0a;
+container: #1a1a2e;
+box: #252542;
+
+/* Text */
+primary: #f8fafc;
+secondary: #94a3b8;
+
+/* Gradient */
+background: linear-gradient(135deg, #ff7ad9 0%, #6a9bff 100%);
 \`\`\`
+
+### Dark Sunset
+\`\`\`css
+/* Background */
+background: #0a0a0a;
+container: #1a1a1a;
+box: #2a2a2a;
+
+/* Text */
+primary: #f8fafc;
+secondary: #94a3b8;
+
+/* Gradient */
+background: linear-gradient(135deg, #ff7ad9 0%, #6a9bff 50%, #ffb86b 100%);
+\`\`\`
+
+---
+
+## Primary Colors
+
+| Název | HEX | Použití |
+|-------|-----|---------|
+| Pink | #ff7ad9 | Gradient, akcenty |
+| Blue | #6a9bff | Gradient, linky |
+| Orange | #ffb86b | Sunset gradient |
 
 ## Fonts
 
@@ -238,6 +289,15 @@ border: 1px solid rgba(255,122,217,0.3);
 
 // Component templates
 const components = {
+  'greeting.html': `<!-- Greeting Component -->
+<tr>
+  <td style="padding: 24px 24px 0 24px;">
+    <p style="font-family: 'Inter', Arial, sans-serif; font-size: 16px; color: #334155; margin: 0;">
+      Dobrý den, {{ contact.OSLOVENI }},
+    </p>
+  </td>
+</tr>`,
+
   'hero-image.html': `<!-- Hero Image Component -->
 <tr>
   <td style="padding: 0;">
@@ -323,163 +383,6 @@ const components = {
 </tr>`,
 };
 
-// Template emails
-const templates = {
-  'welcome.html': `<!DOCTYPE html>
-<html lang="cs">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <title>Vítejte v Aibility</title>
-</head>
-<body style="margin: 0; padding: 0; background-color: #f3f4ff;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4ff;">
-    <tr>
-      <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #f3f4ff; border-radius: 16px;">
-          <!-- Hero -->
-          <tr>
-            <td style="padding: 0;">
-              <img src="HERO_IMAGE_URL" alt="Welcome" style="width: 100%; height: auto; display: block; border-radius: 16px 16px 0 0;">
-            </td>
-          </tr>
-          <!-- Greeting -->
-          <tr>
-            <td style="padding: 24px;">
-              <p style="font-family: 'Inter', Arial, sans-serif; font-size: 16px; color: #334155; margin: 0 0 16px 0;">
-                Dobrý den, {{ contact.OSLOVENI }},
-              </p>
-              <h2 style="font-family: 'Lora', Georgia, serif; font-size: 24px; color: #020617; margin: 0 0 16px 0;">
-                <span style="display:inline-block; vertical-align:middle; line-height:1; font-size:1.1em;">🎉</span> Vítejte v Aibility!
-              </h2>
-              <p style="font-family: 'Inter', Arial, sans-serif; font-size: 16px; color: #334155; line-height: 1.7; margin: 0;">
-                Děkujeme, že jste se připojili. Jsme nadšeni, že vás máme na palubě!
-              </p>
-            </td>
-          </tr>
-          <!-- CTA -->
-          <tr>
-            <td style="padding: 24px; text-align: center;">
-              <a href="https://aibility.cz" style="display: inline-block; padding: 14px 32px; border-radius: 8px; font-family: 'Inter', Arial, sans-serif; font-size: 16px; font-weight: 600; text-decoration: none; background: linear-gradient(135deg, #ff7ad9 0%, #6a9bff 100%); color: #ffffff;">
-                Začít
-              </a>
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding: 32px 24px; text-align: center; border-radius: 0 0 16px 16px;">
-              <p style="font-family: 'Inter', Arial, sans-serif; font-size: 13px; color: #64748b; margin: 0;">Aibility s.r.o.</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`,
-
-  'follow-up.html': `<!DOCTYPE html>
-<html lang="cs">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <title>Follow-up</title>
-</head>
-<body style="margin: 0; padding: 0; background-color: #f3f4ff;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4ff;">
-    <tr>
-      <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #f3f4ff; border-radius: 16px;">
-          <!-- Content -->
-          <tr>
-            <td style="padding: 24px;">
-              <p style="font-family: 'Inter', Arial, sans-serif; font-size: 16px; color: #334155; margin: 0 0 16px 0;">
-                Dobrý den, {{ contact.OSLOVENI }},
-              </p>
-              <h2 style="font-family: 'Lora', Georgia, serif; font-size: 24px; color: #020617; margin: 0 0 16px 0;">
-                Děkujeme za účast!
-              </h2>
-              <p style="font-family: 'Inter', Arial, sans-serif; font-size: 16px; color: #334155; line-height: 1.7; margin: 0;">
-                Bylo skvělé vás vidět. Zde jsou materiály ze setkání.
-              </p>
-            </td>
-          </tr>
-          <!-- Info box -->
-          <tr>
-            <td style="padding: 0 24px;">
-              <table role="presentation" width="100%" style="background: linear-gradient(135deg, rgba(255,122,217,0.15) 0%, rgba(106,155,255,0.15) 100%); border-radius: 12px;">
-                <tr>
-                  <td style="padding: 24px;">
-                    <p style="font-family: 'Inter', Arial, sans-serif; font-size: 15px; color: #334155; margin: 0;">
-                      <span style="display:inline-block; vertical-align:middle; line-height:1; font-size:1.1em;">📎</span> Materiály ke stažení jsou připraveny.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding: 32px 24px; text-align: center;">
-              <p style="font-family: 'Inter', Arial, sans-serif; font-size: 13px; color: #64748b; margin: 0;">Aibility s.r.o.</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`,
-
-  'promo.html': `<!DOCTYPE html>
-<html lang="cs">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="color-scheme" content="light dark">
-  <title>Speciální nabídka</title>
-</head>
-<body style="margin: 0; padding: 0; background-color: #f3f4ff;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4ff;">
-    <tr>
-      <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #f3f4ff; border-radius: 16px;">
-          <!-- Hero -->
-          <tr>
-            <td style="padding: 0;">
-              <img src="PROMO_IMAGE_URL" alt="Promo" style="width: 100%; height: auto; display: block; border-radius: 16px 16px 0 0;">
-            </td>
-          </tr>
-          <!-- Content -->
-          <tr>
-            <td style="padding: 24px; text-align: center;">
-              <h1 style="font-family: 'Lora', Georgia, serif; font-size: 28px; color: #020617; margin: 0 0 16px 0;">
-                <span style="display:inline-block; vertical-align:middle; line-height:1; font-size:1.1em;">🎁</span> Speciální nabídka
-              </h1>
-              <p style="font-family: 'Inter', Arial, sans-serif; font-size: 18px; color: #334155; margin: 0 0 24px 0;">
-                Jen pro vás, jen teď!
-              </p>
-              <a href="https://aibility.cz" style="display: inline-block; padding: 16px 40px; border-radius: 8px; font-family: 'Inter', Arial, sans-serif; font-size: 18px; font-weight: 600; text-decoration: none; background: linear-gradient(135deg, #ffb86b 0%, #ff7ad9 100%); color: #ffffff;">
-                Využít nabídku
-              </a>
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding: 32px 24px; text-align: center;">
-              <p style="font-family: 'Inter', Arial, sans-serif; font-size: 13px; color: #64748b; margin: 0;">Aibility s.r.o.</p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`,
-};
-
 // Main function to generate and download ZIP
 export async function downloadCursorKit() {
   const zip = new JSZip();
@@ -498,16 +401,7 @@ export async function downloadCursorKit() {
     });
   }
 
-  // Add templates
-  const templatesFolder = zip.folder('templates');
-  if (templatesFolder) {
-    Object.entries(templates).forEach(([name, content]) => {
-      templatesFolder.file(name, content);
-    });
-  }
-
   // Generate and download
   const blob = await zip.generateAsync({ type: 'blob' });
   saveAs(blob, 'aibility-email-kit.zip');
 }
-

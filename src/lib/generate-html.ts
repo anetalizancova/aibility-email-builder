@@ -2,6 +2,7 @@
 import {
   EmailState,
   EmailBlock,
+  isGreetingData,
   isHeroImageData,
   isTextSectionData,
   isGradientBoxData,
@@ -10,6 +11,7 @@ import {
   isDividerData,
   isSpacerData,
   isFooterData,
+  GreetingData,
   HeroImageData,
   TextSectionData,
   GradientBoxData,
@@ -28,6 +30,16 @@ const wrapEmoji = (text: string): string => {
     '<span style="display:inline-block; vertical-align:middle; line-height:1; font-size:1.1em;">$1</span>'
   );
 };
+
+// Generate HTML for Greeting block
+const generateGreeting = (data: GreetingData): string => `
+<tr>
+  <td style="padding: 24px 24px 0 24px;">
+    <p style="font-family: 'Inter', Arial, sans-serif; font-size: 16px; color: #334155; margin: 0;">
+      ${wrapEmoji(data.text)}
+    </p>
+  </td>
+</tr>`;
 
 // Generate HTML for Hero Image block
 const generateHeroImage = (data: HeroImageData): string => `
@@ -187,6 +199,7 @@ const generateFooter = (data: FooterData): string => {
 const generateBlockHTML = (block: EmailBlock): string => {
   const { data } = block;
 
+  if (isGreetingData(data)) return generateGreeting(data);
   if (isHeroImageData(data)) return generateHeroImage(data);
   if (isTextSectionData(data)) return generateTextSection(data);
   if (isGradientBoxData(data)) return generateGradientBox(data);
@@ -202,15 +215,6 @@ const generateBlockHTML = (block: EmailBlock): string => {
 // Main function to generate complete email HTML
 export function generateEmailHTML(state: EmailState): string {
   const blocksHTML = state.blocks.map(generateBlockHTML).join('\n');
-
-  const greetingHTML = state.greeting ? `
-<tr>
-  <td style="padding: 24px 24px 0 24px;">
-    <p style="font-family: 'Inter', Arial, sans-serif; font-size: 16px; color: #334155; margin: 0;">
-      ${wrapEmoji(state.greeting)}
-    </p>
-  </td>
-</tr>` : '';
 
   return `<!DOCTYPE html>
 <html lang="cs" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -269,7 +273,6 @@ export function generateEmailHTML(state: EmailState): string {
       <td align="center" style="padding: 40px 20px;">
         <!-- Email container -->
         <table role="presentation" class="email-container" width="600" cellpadding="0" cellspacing="0" style="background-color: #f3f4ff; border-radius: 16px; max-width: 600px;">
-          ${greetingHTML}
           ${blocksHTML}
         </table>
       </td>

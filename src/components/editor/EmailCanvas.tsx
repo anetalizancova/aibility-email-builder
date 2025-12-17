@@ -9,6 +9,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   EmailBlock,
+  isGreetingData,
   isHeroImageData,
   isTextSectionData,
   isGradientBoxData,
@@ -19,7 +20,9 @@ import {
   isFooterData,
   EmailState,
 } from '@/lib/email-state';
+import { themes } from '@/themes';
 import {
+  GreetingBlock,
   HeroImageBlock,
   TextSectionBlock,
   GradientBoxBlock,
@@ -57,6 +60,9 @@ function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate }: S
   const renderBlock = () => {
     const { data } = block;
     
+    if (isGreetingData(data)) {
+      return <GreetingBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+    }
     if (isHeroImageData(data)) {
       return <HeroImageBlock data={data} isSelected={isSelected} onClick={onSelect} />;
     }
@@ -145,36 +151,41 @@ export function EmailCanvas({
   });
 
   const blockIds = state.blocks.map((b) => b.id);
+  const currentTheme = themes[state.theme];
+  const isDark = state.theme.startsWith('dark');
 
   return (
-    <div className="flex-1 bg-gray-100 overflow-y-auto p-8">
+    <div 
+      className="flex-1 overflow-y-auto p-8"
+      style={{ backgroundColor: currentTheme.colors.background }}
+    >
       <div className="max-w-[620px] mx-auto">
         {/* Email preview container */}
         <div
           ref={setNodeRef}
           className={`
-            bg-[#f3f4ff] rounded-2xl shadow-lg min-h-[400px] transition-all
+            rounded-2xl shadow-lg min-h-[400px] transition-all overflow-hidden
             ${isOver ? 'ring-2 ring-pink-500 ring-offset-4' : ''}
           `}
+          style={{ 
+            backgroundColor: isDark ? currentTheme.colors.containerBg : '#f3f4ff',
+          }}
           onClick={() => onSelectBlock(null)}
         >
-          {/* Greeting */}
-          {state.greeting && (
-            <div 
-              className="px-6 pt-6"
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: '16px',
-                color: '#334155',
-              }}
-            >
-              {state.greeting}
-            </div>
-          )}
+          {/* Gradient header */}
+          <div 
+            className="h-4"
+            style={{
+              background: `linear-gradient(135deg, ${currentTheme.colors.gradientStart} 0%, ${currentTheme.colors.gradientEnd} 100%)`,
+            }}
+          />
 
           {/* Blocks */}
           {state.blocks.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <div 
+              className="flex flex-col items-center justify-center py-20"
+              style={{ color: currentTheme.colors.textSecondary }}
+            >
               <div className="text-4xl mb-4">📧</div>
               <p className="text-lg font-medium">Začni přidávat bloky</p>
               <p className="text-sm">Přetáhni blok z levého panelu nebo klikni</p>
@@ -207,4 +218,3 @@ export function EmailCanvas({
     </div>
   );
 }
-

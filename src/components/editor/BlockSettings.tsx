@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import {
   EmailBlock,
   BlockData,
+  GreetingData,
   HeroImageData,
   TextSectionData,
   GradientBoxData,
@@ -13,6 +14,7 @@ import {
   SpacerData,
   FooterData,
   blockLabels,
+  isGreetingData,
   isHeroImageData,
   isTextSectionData,
   isGradientBoxData,
@@ -21,25 +23,27 @@ import {
   isDividerData,
   isSpacerData,
   isFooterData,
+  EmailState,
 } from '@/lib/email-state';
+import { themes, ThemeId } from '@/themes';
 
 interface BlockSettingsProps {
   block: EmailBlock | null;
-  greeting: string;
   preheader: string;
+  currentTheme: ThemeId;
   onUpdateBlock: (id: string, data: Partial<BlockData>) => void;
-  onUpdateGreeting: (greeting: string) => void;
   onUpdatePreheader: (preheader: string) => void;
+  onUpdateTheme: (theme: ThemeId) => void;
   onImageUpload: (file: File) => Promise<string>;
 }
 
 export function BlockSettings({
   block,
-  greeting,
   preheader,
+  currentTheme,
   onUpdateBlock,
-  onUpdateGreeting,
   onUpdatePreheader,
+  onUpdateTheme,
   onImageUpload,
 }: BlockSettingsProps) {
   const [uploading, setUploading] = useState(false);
@@ -66,6 +70,58 @@ export function BlockSettings({
         </div>
         
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
+          {/* Theme Selector */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Barevná varianta
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {(Object.keys(themes) as ThemeId[]).map((themeId) => {
+                const theme = themes[themeId];
+                const isSelected = currentTheme === themeId;
+                const isDark = themeId.startsWith('dark');
+                
+                return (
+                  <button
+                    key={themeId}
+                    onClick={() => onUpdateTheme(themeId)}
+                    className={`
+                      p-3 rounded-lg border-2 text-left transition-all
+                      ${isSelected 
+                        ? 'border-pink-500 ring-2 ring-pink-200' 
+                        : 'border-gray-200 hover:border-gray-300'
+                      }
+                    `}
+                  >
+                    {/* Preview */}
+                    <div 
+                      className="h-12 rounded-md mb-2 overflow-hidden"
+                      style={{ backgroundColor: isDark ? theme.colors.containerBg : '#f3f4ff' }}
+                    >
+                      <div 
+                        className="h-2"
+                        style={{
+                          background: `linear-gradient(135deg, ${theme.colors.gradientStart} 0%, ${theme.colors.gradientEnd} 100%)`,
+                        }}
+                      />
+                    </div>
+                    <div className="text-xs font-medium text-gray-900">{theme.name}</div>
+                    <div className="flex gap-1 mt-1">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: theme.colors.gradientStart }}
+                      />
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: theme.colors.gradientEnd }}
+                      />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Preheader (preview text)
@@ -82,25 +138,18 @@ export function BlockSettings({
             </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Oslovení
-            </label>
-            <input
-              type="text"
-              value={greeting}
-              onChange={(e) => onUpdateGreeting(e.target.value)}
-              placeholder="Dobrý den, {{ contact.OSLOVENI }},"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Použij {'{{ contact.OSLOVENI }}'} pro personalizaci
-            </p>
-          </div>
-
           <div className="bg-gray-50 rounded-lg p-4">
             <p className="text-sm text-gray-600">
               💡 Klikni na blok v preview pro úpravu jeho obsahu
+            </p>
+          </div>
+
+          <div className="bg-blue-50 rounded-lg p-4">
+            <p className="text-sm text-blue-700 font-medium mb-1">
+              Tip: Přidej oslovení
+            </p>
+            <p className="text-xs text-blue-600">
+              Klikni na "Oslovení" v levém panelu pro přidání personalizovaného pozdravu
             </p>
           </div>
         </div>
@@ -121,6 +170,25 @@ export function BlockSettings({
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Greeting Settings */}
+        {isGreetingData(data) && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Text oslovení
+            </label>
+            <input
+              type="text"
+              value={(data as GreetingData).text}
+              onChange={(e) => onUpdateBlock(id, { text: e.target.value })}
+              placeholder="Dobrý den, {{ contact.OSLOVENI }},"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Použij {'{{ contact.OSLOVENI }}'} pro personalizaci
+            </p>
+          </div>
+        )}
+
         {/* Hero Image Settings */}
         {isHeroImageData(data) && (
           <>
@@ -468,4 +536,3 @@ export function BlockSettings({
     </div>
   );
 }
-

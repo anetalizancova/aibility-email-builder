@@ -4,6 +4,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { BlockType, blockLabels } from '@/lib/email-state';
 
 const availableBlocks: BlockType[] = [
+  'greeting',
   'hero-image',
   'text-section',
   'gradient-box',

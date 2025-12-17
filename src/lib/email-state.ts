@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 
 // Block Types
 export type BlockType = 
+  | 'greeting'
   | 'hero-image'
   | 'text-section'
   | 'gradient-box'
@@ -13,6 +14,10 @@ export type BlockType =
   | 'footer';
 
 // Block Data Interfaces
+export interface GreetingData {
+  text: string;
+}
+
 export interface HeroImageData {
   imageUrl: string;
   altText: string;
@@ -62,6 +67,7 @@ export interface FooterData {
 
 // Union type for all block data
 export type BlockData = 
+  | GreetingData
   | HeroImageData 
   | TextSectionData 
   | GradientBoxData 
@@ -84,12 +90,15 @@ export interface EmailState {
   selectedBlockId: string | null;
   theme: 'light-pink-blue' | 'light-sunset' | 'dark-pink-blue' | 'dark-sunset';
   preheader: string;
-  greeting: string;
 }
 
 // Default data for each block type
 export const getDefaultBlockData = (type: BlockType): BlockData => {
   switch (type) {
+    case 'greeting':
+      return {
+        text: 'Dobrý den, {{ contact.OSLOVENI }},',
+      };
     case 'hero-image':
       return {
         imageUrl: 'https://via.placeholder.com/600x300',
@@ -144,6 +153,11 @@ export const getDefaultBlockData = (type: BlockType): BlockData => {
 
 // Block labels for UI
 export const blockLabels: Record<BlockType, { name: string; icon: string; description: string }> = {
+  'greeting': {
+    name: 'Oslovení',
+    icon: '👋',
+    description: 'Personalizované oslovení',
+  },
   'hero-image': {
     name: 'Hero obrázek',
     icon: '🖼️',
@@ -195,7 +209,6 @@ const initialState: EmailState = {
   selectedBlockId: null,
   theme: 'light-pink-blue',
   preheader: '',
-  greeting: 'Dobrý den, {{ contact.OSLOVENI }},',
 };
 
 // Custom hook for email state management
@@ -298,11 +311,6 @@ export function useEmailState(initial?: Partial<EmailState>) {
     setState((prev) => ({ ...prev, preheader }));
   }, []);
 
-  // Set greeting
-  const setGreeting = useCallback((greeting: string) => {
-    setState((prev) => ({ ...prev, greeting }));
-  }, []);
-
   // Get selected block
   const getSelectedBlock = useCallback(() => {
     return state.blocks.find((b) => b.id === state.selectedBlockId) || null;
@@ -329,7 +337,6 @@ export function useEmailState(initial?: Partial<EmailState>) {
     duplicateBlock,
     setTheme,
     setPreheader,
-    setGreeting,
     getSelectedBlock,
     clearBlocks,
     loadState,
@@ -337,6 +344,9 @@ export function useEmailState(initial?: Partial<EmailState>) {
 }
 
 // Type guards for block data
+export const isGreetingData = (data: BlockData): data is GreetingData =>
+  'text' in data && Object.keys(data).length === 1 && !('url' in data);
+
 export const isHeroImageData = (data: BlockData): data is HeroImageData =>
   'imageUrl' in data && 'altText' in data && !('width' in data);
 

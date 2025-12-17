@@ -1,3 +1,4 @@
+export { GreetingBlock } from './GreetingBlock';
 export { HeroImageBlock } from './HeroImageBlock';
 export { TextSectionBlock } from './TextSectionBlock';
 export { GradientBoxBlock } from './GradientBoxBlock';
