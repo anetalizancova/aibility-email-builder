@@ -1,267 +1,204 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { Suspense, useCallback, useState } from 'react';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { themes, themeList, ThemeId } from '@/themes';
-import { EmailWrapper, GradientBox, CTAButton, TextSection } from '@/components/email';
-import { emailWrapperStartHTML, emailWrapperEndHTML } from '@/components/email/EmailWrapper';
-import { gradientBoxToHTML } from '@/components/email/GradientBox';
-import { ctaButtonToHTML } from '@/components/email/CTAButton';
+import { useEmailState, BlockType, blockLabels } from '@/lib/email-state';
+import { BlockPalette } from '@/components/editor/BlockPalette';
+import { EmailCanvas } from '@/components/editor/EmailCanvas';
+import { BlockSettings } from '@/components/editor/BlockSettings';
+import { generateEmailHTML } from '@/lib/generate-html';
 
 function EditorContent() {
-  const searchParams = useSearchParams();
-  const initialTheme = (searchParams.get('theme') as ThemeId) || 'light-pink-blue';
-  
-  const [selectedTheme, setSelectedTheme] = useState<ThemeId>(initialTheme);
-  const [showCode, setShowCode] = useState(false);
-  const [copied, setCopied] = useState(false);
-  
-  const theme = themes[selectedTheme];
+  const {
+    state,
+    addBlock,
+    removeBlock,
+    updateBlock,
+    reorderBlocks,
+    selectBlock,
+    duplicateBlock,
+    setGreeting,
+    setPreheader,
+    getSelectedBlock,
+  } = useEmailState();
 
-  // Demo email content
-  const generateHTML = () => {
-    const boxHTML = gradientBoxToHTML({
-      title: 'Váš nadpis zde',
-      emoji: '🚀',
-      children: null,
-      theme,
-    });
-    
-    const buttonHTML = ctaButtonToHTML({
-      text: 'Call to Action',
-      href: 'https://aibility.cz',
-      emoji: '👉',
-      theme,
-    });
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
-    return `${emailWrapperStartHTML(theme)}
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
-          <!-- Text Section -->
-          <tr>
-            <td class="content-padding mobile-padding" style="padding:32px 32px 0 32px; color:${theme.colors.textPrimary}; font-family:'Inter', system-ui, sans-serif;">
-              <p style="margin:0 0 16px 0; font-size:15px; line-height:1.8;">
-                Dobrý den, {{ contact.OSLOVENI }},
-              </p>
-              <p style="margin:0 0 16px 0; font-size:15px; line-height:1.8;">
-                Váš text zde...
-              </p>
-            </td>
-          </tr>
-
-          <!-- Gradient Box -->
-${boxHTML}
-
-          <!-- CTA Button -->
-${buttonHTML}
-
-          <!-- Footer -->
-          <tr>
-            <td class="mobile-padding" style="padding:24px 32px 32px 32px; border-top:1px solid ${theme.colors.border};">
-              <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                <tr>
-                  <td align="center">
-                    <p style="margin:0; font-size:15px; color:${theme.colors.textPrimary}; text-align:center;">
-                      <strong>Tým Aibility</strong>
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-
-${emailWrapperEndHTML()}`;
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
   };
 
-  const copyToClipboard = async () => {
-    const html = generateHTML();
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over) return;
+
+    // If dragging from palette
+    const activeData = active.data.current;
+    if (activeData?.fromPalette) {
+      const blockType = activeData.type as BlockType;
+      addBlock(blockType);
+      return;
+    }
+
+    // If reordering within canvas
+    if (active.id !== over.id) {
+      const oldIndex = state.blocks.findIndex((b) => b.id === active.id);
+      const newIndex = state.blocks.findIndex((b) => b.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const newOrder = arrayMove(
+          state.blocks.map((b) => b.id),
+          oldIndex,
+          newIndex
+        );
+        reorderBlocks(newOrder);
+      }
+    }
+  };
+
+  // Image upload handler (temporary - stores as base64)
+  const handleImageUpload = useCallback(async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }, []);
+
+  // Copy HTML to clipboard
+  const handleCopyHTML = async () => {
+    const html = generateEmailHTML(state);
     await navigator.clipboard.writeText(html);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
   };
 
-  const downloadHTML = () => {
-    const html = generateHTML();
+  // Download HTML file
+  const handleDownloadHTML = () => {
+    const html = generateEmailHTML(state);
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `email-${selectedTheme}.html`;
+    a.download = 'email.html';
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
+  const selectedBlock = getSelectedBlock();
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="h-screen flex flex-col bg-gray-50">
+        {/* Header */}
+        <header className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-gray-500 hover:text-gray-900">
-              ← Zpět
+            <Link href="/" className="text-xl font-bold text-gray-900">
+              📧 Email Builder
             </Link>
-            <div className="h-6 w-px bg-gray-200" />
-            <h1 className="font-semibold text-gray-900">Email Editor</h1>
+            <span className="text-sm text-gray-500">
+              {state.blocks.length} bloků
+            </span>
           </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyHTML}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                copySuccess
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {copySuccess ? '✓ Zkopírováno!' : '📋 Kopírovat HTML'}
+            </button>
+            <button
+              onClick={handleDownloadHTML}
+              className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-pink-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-opacity"
+            >
+              ⬇️ Stáhnout HTML
+            </button>
+            <Link
+              href="/tips"
+              className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+            >
+              💡 Tipy
+            </Link>
+          </div>
+        </header>
+
+        {/* Main content */}
+        <div className="flex-1 flex overflow-hidden">
+          <BlockPalette onAddBlock={addBlock} />
           
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowCode(!showCode)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              {showCode ? 'Preview' : 'Kód'}
-            </button>
-            <button
-              onClick={copyToClipboard}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              {copied ? '✓ Zkopírováno' : 'Kopírovat HTML'}
-            </button>
-            <button
-              onClick={downloadHTML}
-              className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors"
-            >
-              Stáhnout HTML
-            </button>
-          </div>
+          <EmailCanvas
+            state={state}
+            onSelectBlock={selectBlock}
+            onRemoveBlock={removeBlock}
+            onDuplicateBlock={duplicateBlock}
+          />
+          
+          <BlockSettings
+            block={selectedBlock}
+            greeting={state.greeting}
+            preheader={state.preheader}
+            onUpdateBlock={updateBlock}
+            onUpdateGreeting={setGreeting}
+            onUpdatePreheader={setPreheader}
+            onImageUpload={handleImageUpload}
+          />
         </div>
-      </header>
-
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-72 border-r border-gray-200 bg-white h-[calc(100vh-65px)] overflow-y-auto">
-          {/* Theme Selector */}
-          <div className="p-4 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-900 mb-3">Barevná varianta</h2>
-            <div className="space-y-2">
-              {themeList.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => setSelectedTheme(t.id)}
-                  className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all ${
-                    selectedTheme === t.id
-                      ? 'bg-gray-100 ring-2 ring-black'
-                      : 'hover:bg-gray-50'
-                  }`}
-                >
-                  {/* Color preview */}
-                  <div
-                    className="w-10 h-10 rounded-lg flex-shrink-0"
-                    style={{
-                      backgroundImage: `url('${t.gradientImageUrl}')`,
-                      backgroundColor: t.colors.background,
-                      backgroundSize: 'cover',
-                    }}
-                  >
-                    <div
-                      className="w-full h-full rounded-lg"
-                      style={{ backgroundColor: t.colors.containerBg, opacity: 0.9 }}
-                    />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">{t.name}</div>
-                    <div className="text-xs text-gray-500">{t.id.includes('dark') ? 'Tmavý' : 'Světlý'}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Components */}
-          <div className="p-4">
-            <h2 className="text-sm font-semibold text-gray-900 mb-3">Komponenty</h2>
-            <div className="space-y-2">
-              {[
-                { name: 'Hero Image', emoji: '🖼️' },
-                { name: 'Text Section', emoji: '📝' },
-                { name: 'Gradient Box', emoji: '📦' },
-                { name: 'CTA Button', emoji: '🔘' },
-                { name: 'Spacer', emoji: '↕️' },
-                { name: 'Footer', emoji: '📄' },
-              ].map((comp) => (
-                <div
-                  key={comp.name}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
-                >
-                  <span className="text-xl">{comp.emoji}</span>
-                  <span className="text-sm font-medium">{comp.name}</span>
-                </div>
-              ))}
-            </div>
-            <p className="text-xs text-gray-400 mt-4">
-              Tip: Stáhni HTML a uprav v Cursoru pro plnou kontrolu
-            </p>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-8 overflow-y-auto h-[calc(100vh-65px)]">
-          {showCode ? (
-            /* Code View */
-            <div className="max-w-4xl mx-auto">
-              <pre className="bg-gray-900 text-gray-100 p-6 rounded-2xl overflow-x-auto text-sm">
-                <code>{generateHTML()}</code>
-              </pre>
-            </div>
-          ) : (
-            /* Preview */
-            <EmailWrapper theme={theme}>
-              {/* Demo Content */}
-              <div className="p-0">
-                {/* Hero placeholder */}
-                <div 
-                  className="h-48 flex items-center justify-center text-gray-400"
-                  style={{ backgroundColor: theme.colors.boxBg }}
-                >
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">🖼️</div>
-                    <div className="text-sm">Hero Image</div>
-                  </div>
-                </div>
-
-                {/* Text Section */}
-                <TextSection theme={theme}>
-                  <p className="mb-4">Dobrý den, {'{{ contact.OSLOVENI }}'},</p>
-                  <p>Váš text zde. Upravte podle potřeby.</p>
-                </TextSection>
-
-                {/* Gradient Box */}
-                <div className="px-8 py-5">
-                  <GradientBox title="Váš nadpis zde" emoji="🚀" theme={theme}>
-                    <p>Obsah boxu. Zde můžete napsat hlavní sdělení emailu.</p>
-                  </GradientBox>
-                </div>
-
-                {/* CTA Button */}
-                <CTAButton
-                  text="Call to Action"
-                  href="https://aibility.cz"
-                  emoji="👉"
-                  theme={theme}
-                />
-
-                {/* Footer */}
-                <div
-                  className="px-8 py-6 text-center"
-                  style={{
-                    borderTop: `1px solid ${theme.colors.border}`,
-                    color: theme.colors.textPrimary,
-                  }}
-                >
-                  <strong>Tým Aibility</strong>
-                </div>
-              </div>
-            </EmailWrapper>
-          )}
-        </main>
       </div>
-    </div>
+
+      {/* Drag overlay */}
+      <DragOverlay>
+        {activeId && activeId.startsWith('palette-') && (
+          <div className="bg-white p-3 rounded-lg shadow-lg border border-pink-300 flex items-center gap-2">
+            <span className="text-xl">
+              {blockLabels[activeId.replace('palette-', '') as BlockType]?.icon}
+            </span>
+            <span className="font-medium text-gray-900">
+              {blockLabels[activeId.replace('palette-', '') as BlockType]?.name}
+            </span>
+          </div>
+        )}
+      </DragOverlay>
+    </DndContext>
   );
 }
 
 export default function EditorPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Načítám...</div>}>
+    <Suspense fallback={<div className="h-screen flex items-center justify-center">Načítám editor...</div>}>
       <EditorContent />
     </Suspense>
   );
