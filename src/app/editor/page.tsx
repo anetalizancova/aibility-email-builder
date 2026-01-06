@@ -43,7 +43,7 @@ function EditorContent() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 5, // Lower distance for more responsive dragging
       },
     })
   );
@@ -62,12 +62,22 @@ function EditorContent() {
     const activeData = active.data.current;
     if (activeData?.fromPalette) {
       const blockType = activeData.type as BlockType;
-      addBlock(blockType);
+      // If dropped on a specific block, insert before it, otherwise append
+      if (over.id !== 'email-canvas') {
+        const targetIndex = state.blocks.findIndex((b) => b.id === over.id);
+        if (targetIndex !== -1) {
+          addBlock(blockType, targetIndex);
+        } else {
+          addBlock(blockType);
+        }
+      } else {
+        addBlock(blockType);
+      }
       return;
     }
 
-    // If reordering within canvas
-    if (active.id !== over.id) {
+    // If reordering within canvas - allow moving between any blocks
+    if (active.id !== over.id && over.id !== 'email-canvas') {
       const oldIndex = state.blocks.findIndex((b) => b.id === active.id);
       const newIndex = state.blocks.findIndex((b) => b.id === over.id);
 
@@ -123,17 +133,35 @@ function EditorContent() {
     URL.revokeObjectURL(url);
   };
 
-  // Load template
+  // Load template - makes it fully editable
   const handleLoadTemplate = (templateId: string) => {
     const template = getTemplate(templateId);
     if (template) {
       if (state.blocks.length > 0) {
         if (confirm('Načtení šablony smaže aktuální email. Pokračovat?')) {
-          loadState(template.state);
+          // Deep clone the template state to make it fully editable
+          const editableState = {
+            ...template.state,
+            blocks: template.state.blocks.map(block => ({
+              ...block,
+              id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${block.id}`,
+              data: { ...block.data },
+            })),
+          };
+          loadState(editableState);
           setShowTemplates(false);
         }
       } else {
-        loadState(template.state);
+        // Deep clone the template state to make it fully editable
+        const editableState = {
+          ...template.state,
+          blocks: template.state.blocks.map(block => ({
+            ...block,
+            id: `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${block.id}`,
+            data: { ...block.data },
+          })),
+        };
+        loadState(editableState);
         setShowTemplates(false);
       }
     }

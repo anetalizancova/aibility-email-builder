@@ -294,7 +294,7 @@ export function useEmailState(initial?: Partial<EmailState>) {
 
     setState((prev) => {
       const newBlocks = [...prev.blocks];
-      if (index !== undefined) {
+      if (index !== undefined && index >= 0) {
         newBlocks.splice(index, 0, newBlock);
       } else {
         newBlocks.push(newBlock);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useDroppable } from '@dnd-kit/core';
+import { useDroppable, useDraggable } from '@dnd-kit/core';
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -55,12 +55,19 @@ function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate }: S
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: block.id });
+  } = useSortable({ 
+    id: block.id,
+    data: {
+      type: 'block',
+      block,
+    },
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
+    transition: isDragging ? 'none' : transition,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 50 : 1,
   };
 
   const renderBlock = () => {
@@ -107,40 +114,67 @@ function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate }: S
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group">
-      {/* Drag handle */}
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      className={`
+        relative group 
+        border-2 rounded-lg transition-all
+        ${isSelected ? 'border-pink-500 bg-pink-50/30' : 'border-transparent hover:border-gray-300'}
+        ${isDragging ? 'shadow-2xl scale-105' : 'shadow-sm hover:shadow-md'}
+      `}
+    >
+      {/* Drag handle - always visible, better positioned */}
       <div
         {...attributes}
         {...listeners}
         className={`
-          absolute left-0 top-1/2 -translate-y-1/2 -translate-x-10
+          absolute left-2 top-2
           w-8 h-8 flex items-center justify-center
-          bg-gray-100 rounded cursor-grab active:cursor-grabbing
-          opacity-0 group-hover:opacity-100 transition-opacity
-          ${isDragging ? 'opacity-100' : ''}
+          bg-white border border-gray-300 rounded-md shadow-sm
+          cursor-grab active:cursor-grabbing
+          hover:bg-pink-50 hover:border-pink-400 hover:shadow-md
+          transition-all z-20
+          ${isDragging ? 'opacity-70' : 'opacity-100'}
         `}
+        title="Přesunout blok"
+        onClick={(e) => e.stopPropagation()}
       >
-        ⋮⋮
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-600">
+          <path d="M5 4H11M5 8H11M5 12H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
       </div>
       
-      {/* Block actions */}
+      {/* Block actions - always visible on hover, better positioned */}
+      <div className={`
+        absolute right-2 top-2
+        flex flex-row gap-2 z-20
+        ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} 
+        transition-opacity
+      `}>
+        <button
+          onClick={(e) => { e.stopPropagation(); onDuplicate(); }}
+          className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-md shadow-sm hover:bg-blue-50 hover:border-blue-400 hover:shadow-md transition-all"
+          title="Duplikovat blok"
+        >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-600">
+            <path d="M4 2H12C12.5523 2 13 2.44772 13 3V11M4 2C4 1.44772 4.44772 1 5 1H9.58579C9.851 1 10.1054 1.10536 10.2929 1.29289L12.7071 3.70711C12.8946 3.89464 13 4.149 13 4.41421V11M4 2L4 14H13V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-md shadow-sm hover:bg-red-50 hover:border-red-400 hover:shadow-md transition-all"
+          title="Smazat blok"
+        >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-600">
+            <path d="M2 4H14M6 4V3C6 2.44772 6.44772 2 7 2H9C9.55228 2 10 2.44772 10 3V4M6 7.5V12.5M10 7.5V12.5M3 4L3.5 13C3.5 13.5523 3.94772 14 4.5 14H11.5C12.0523 14 12.5 13.5523 12.5 13L13 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      
+      {/* Selection indicator - subtle */}
       {isSelected && (
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 flex flex-col gap-1">
-          <button
-            onClick={(e) => { e.stopPropagation(); onDuplicate(); }}
-            className="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
-            title="Duplikovat"
-          >
-            📋
-          </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); onRemove(); }}
-            className="w-8 h-8 flex items-center justify-center bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
-            title="Smazat"
-          >
-            🗑️
-          </button>
-        </div>
+        <div className="absolute inset-0 border-2 border-pink-500 rounded-lg pointer-events-none z-0 bg-pink-50/20" />
       )}
       
       {renderBlock()}
@@ -163,6 +197,9 @@ export function EmailCanvas({
 }: EmailCanvasProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: 'email-canvas',
+    data: {
+      type: 'canvas',
+    },
   });
 
   const blockIds = state.blocks.map((b) => b.id);
@@ -207,8 +244,8 @@ export function EmailCanvas({
             </div>
           ) : (
             <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
-              <div className="space-y-0">
-                {state.blocks.map((block) => (
+              <div className="space-y-3 py-3">
+                {state.blocks.map((block, index) => (
                   <SortableBlock
                     key={block.id}
                     block={block}
@@ -222,10 +259,10 @@ export function EmailCanvas({
             </SortableContext>
           )}
 
-          {/* Drop zone indicator when empty or at bottom */}
-          {isOver && state.blocks.length > 0 && (
-            <div className="h-16 border-2 border-dashed border-pink-300 bg-pink-50 rounded-lg m-4 flex items-center justify-center text-pink-500">
-              Pusť zde
+          {/* Drop zone indicator when empty */}
+          {isOver && state.blocks.length === 0 && (
+            <div className="h-32 border-2 border-dashed border-pink-400 bg-pink-50 rounded-lg m-4 flex items-center justify-center text-pink-500 font-medium">
+              Pusť blok zde
             </div>
           )}
         </div>
