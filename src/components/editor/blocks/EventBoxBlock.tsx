@@ -103,7 +103,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
             />
           ) : (
             <p
-              onDoubleClick={(e) => {
+              onClick={(e) => {
                 e.stopPropagation();
                 if (isSelected) setEditingField('metaInfo');
               }}
@@ -119,7 +119,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                 minHeight: '20px',
               }}
             >
-              {data.metaInfo || (isSelected ? 'Dvojklik pro meta info' : '')}
+              {data.metaInfo || (isSelected ? 'Klikni pro meta info' : '')}
             </p>
           )}
 
@@ -154,7 +154,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
             />
           ) : (
             <h2
-              onDoubleClick={(e) => {
+              onClick={(e) => {
                 e.stopPropagation();
                 if (isSelected) setEditingField('title');
               }}
@@ -169,7 +169,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                 minHeight: '34px',
               }}
             >
-              {data.title || (isSelected ? 'Dvojklik pro nadpis' : '')}
+              {data.title || (isSelected ? 'Klikni pro nadpis' : '')}
             </h2>
           )}
 
@@ -198,7 +198,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
             />
           ) : (
             <div
-              onDoubleClick={(e) => {
+              onClick={(e) => {
                 e.stopPropagation();
                 if (isSelected) setEditingField('description');
               }}
@@ -213,7 +213,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                 whiteSpace: 'pre-wrap',
               }}
             >
-              {data.description || (isSelected ? 'Dvojklik pro popis' : '')}
+              {data.description || (isSelected ? 'Klikni pro popis' : '')}
             </div>
           )}
 
@@ -252,7 +252,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
             ) : (
               <a
                 href={data.buttonUrl}
-                onDoubleClick={(e) => {
+                onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   if (isSelected) setEditingField('buttonText');
@@ -273,7 +273,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                   cursor: isSelected ? 'text' : 'pointer',
                 }}
               >
-                {data.buttonText || (isSelected ? 'Dvojklik pro text tlačítka' : '')}
+                {data.buttonText || (isSelected ? 'Klikni pro text tlačítka' : '')}
               </a>
             )}
             <div style={{ marginTop: '8px', fontSize: '12px', color: '#94a3b8' }}>
@@ -297,13 +297,13 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                 />
               ) : (
                 <span
-                  onDoubleClick={(e) => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     if (isSelected) setEditingField('buttonUrl');
                   }}
                   style={{ cursor: isSelected ? 'text' : 'pointer' }}
                 >
-                  → {data.buttonUrl || (isSelected ? 'Dvojklik pro URL' : '')}
+                  → {data.buttonUrl || (isSelected ? 'Klikni pro URL' : '')}
                 </span>
               )}
             </div>
@@ -321,7 +321,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
       </div>
       {isSelected && (
         <div className="absolute top-2 right-6 bg-pink-500 text-white text-xs px-2 py-1 rounded">
-          Event box • Dvojklik pro editaci
+          Event box • Klikni pro editaci
         </div>
       )}
     </div>

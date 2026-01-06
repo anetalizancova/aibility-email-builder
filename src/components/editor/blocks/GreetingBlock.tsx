@@ -58,7 +58,7 @@ export function GreetingBlock({ data, isSelected, onClick, onUpdate }: Props) {
         />
       ) : (
         <p
-          onDoubleClick={(e) => {
+          onClick={(e) => {
             e.stopPropagation();
             if (isSelected) {
               setIsEditing(true);
@@ -73,12 +73,12 @@ export function GreetingBlock({ data, isSelected, onClick, onUpdate }: Props) {
             minHeight: '24px',
           }}
         >
-          {data.text || (isSelected ? 'Dvojklik pro přidání oslovení' : '')}
+          {data.text || (isSelected ? 'Klikni pro přidání oslovení' : '')}
         </p>
       )}
       {isSelected && (
         <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-2 py-1 rounded">
-          Oslovení • Dvojklik pro editaci
+          Oslovení • Klikni pro editaci
         </div>
       )}
     </div>

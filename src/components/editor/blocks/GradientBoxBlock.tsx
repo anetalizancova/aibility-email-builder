@@ -84,7 +84,7 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
           />
         ) : (
           <h4
-            onDoubleClick={(e) => {
+            onClick={(e) => {
               e.stopPropagation();
               if (isSelected) {
                 setIsEditingTitle(true);
@@ -100,7 +100,7 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
               minHeight: '24px',
             }}
           >
-            {data.title || (isSelected ? 'Dvojklik pro přidání nadpisu' : '')}
+            {data.title || (isSelected ? 'Klikni pro přidání nadpisu' : '')}
           </h4>
         )}
         {isEditingContent && isSelected ? (
@@ -128,7 +128,7 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
           />
         ) : (
           <p
-            onDoubleClick={(e) => {
+            onClick={(e) => {
               e.stopPropagation();
               if (isSelected) {
                 setIsEditingContent(true);
@@ -145,7 +145,7 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
               whiteSpace: 'pre-wrap',
             }}
           >
-            {data.content || (isSelected ? 'Dvojklik pro přidání textu' : '')}
+            {data.content || (isSelected ? 'Klikni pro přidání textu' : '')}
           </p>
         )}
         {data.bulletPoints && data.bulletPoints.length > 0 && (
@@ -168,7 +168,7 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
       </div>
       {isSelected && (
         <div className="absolute top-2 right-6 bg-pink-500 text-white text-xs px-2 py-1 rounded">
-          Barevný box • Dvojklik pro editaci
+          Barevný box • Klikni pro editaci
         </div>
       )}
     </div>

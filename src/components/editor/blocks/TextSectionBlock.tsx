@@ -38,19 +38,13 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onUpdate) {
-      console.log('Updating title:', e.target.value);
       onUpdate({ title: e.target.value });
-    } else {
-      console.warn('onUpdate is not provided!');
     }
   };
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (onUpdate) {
-      console.log('Updating content:', e.target.value);
       onUpdate({ content: e.target.value });
-    } else {
-      console.warn('onUpdate is not provided!');
     }
   };
 
@@ -102,7 +96,6 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
             onClick={(e) => {
               e.stopPropagation();
               if (isSelected) {
-                console.log('Starting title edit, isSelected:', isSelected, 'onUpdate:', !!onUpdate);
                 setIsEditingTitle(true);
               }
             }}
@@ -149,7 +142,6 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
           onClick={(e) => {
             e.stopPropagation();
             if (isSelected) {
-              console.log('Starting content edit, isSelected:', isSelected, 'onUpdate:', !!onUpdate);
               setIsEditingContent(true);
             }
           }}

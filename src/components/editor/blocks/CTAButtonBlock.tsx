@@ -81,7 +81,7 @@ export function CTAButtonBlock({ data, isSelected, onClick, onUpdate }: Props) {
         />
       ) : (
         <span
-          onDoubleClick={(e) => {
+          onClick={(e) => {
             e.stopPropagation();
             if (isSelected) setIsEditingText(true);
           }}
@@ -97,7 +97,7 @@ export function CTAButtonBlock({ data, isSelected, onClick, onUpdate }: Props) {
             ...buttonStyle,
           }}
         >
-          {data.text || (isSelected ? 'Dvojklik pro přidání textu' : '')}
+          {data.text || (isSelected ? 'Klikni pro přidání textu' : '')}
         </span>
       )}
       <div style={{ marginTop: '8px' }}>
@@ -130,7 +130,7 @@ export function CTAButtonBlock({ data, isSelected, onClick, onUpdate }: Props) {
           />
         ) : (
           <div
-            onDoubleClick={(e) => {
+            onClick={(e) => {
               e.stopPropagation();
               if (isSelected) setIsEditingUrl(true);
             }}
@@ -141,13 +141,13 @@ export function CTAButtonBlock({ data, isSelected, onClick, onUpdate }: Props) {
               cursor: isSelected ? 'text' : 'pointer',
             }}
           >
-            → {data.url || (isSelected ? 'Dvojklik pro přidání URL' : '')}
+            → {data.url || (isSelected ? 'Klikni pro přidání URL' : '')}
           </div>
         )}
       </div>
       {isSelected && (
         <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-2 py-1 rounded">
-          Tlačítko • Dvojklik pro editaci
+          Tlačítko • Klikni pro editaci
         </div>
       )}
     </div>

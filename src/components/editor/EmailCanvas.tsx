@@ -91,10 +91,10 @@ function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate, onU
       return <EventBoxBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     if (isUseCaseBubbleData(data)) {
-      return <UseCaseBubbleBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+      return <UseCaseBubbleBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     if (isVideoSectionData(data)) {
-      return <VideoSectionBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+      return <VideoSectionBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     if (isCTAButtonData(data)) {
       return <CTAButtonBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
@@ -109,7 +109,7 @@ function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate, onU
       return <SpacerBlock data={data} isSelected={isSelected} onClick={onSelect} />;
     }
     if (isFooterData(data)) {
-      return <FooterBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+      return <FooterBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     
     return null;
@@ -254,16 +254,10 @@ export function EmailCanvas({
                     key={block.id}
                     block={block}
                     isSelected={state.selectedBlockId === block.id}
-                    onSelect={() => {
-                      console.log('Selecting block:', block.id);
-                      onSelectBlock(block.id);
-                    }}
+                    onSelect={() => onSelectBlock(block.id)}
                     onRemove={() => onRemoveBlock(block.id)}
                     onDuplicate={() => onDuplicateBlock(block.id)}
-                    onUpdate={(data) => {
-                      console.log('Updating block:', block.id, 'with data:', data);
-                      onUpdateBlock(block.id, data);
-                    }}
+                    onUpdate={(data) => onUpdateBlock(block.id, data)}
                   />
                 ))}
               </div>
