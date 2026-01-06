@@ -76,6 +76,7 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
                 setIsEditingTitle(false);
               }
             }}
+            onClick={(e) => e.stopPropagation()}
             style={{
               fontFamily: "'Lora', serif",
               fontSize: '20px',
@@ -92,7 +93,12 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
           />
         ) : (
           <h3
-            onDoubleClick={() => isSelected && setIsEditingTitle(true)}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              if (isSelected) {
+                setIsEditingTitle(true);
+              }
+            }}
             style={{
               fontFamily: "'Lora', serif",
               fontSize: '20px',
@@ -104,7 +110,7 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
               minHeight: '28px',
             }}
           >
-            {data.title || (isSelected ? 'Klikni pro přidání nadpisu' : '')}
+            {data.title || (isSelected ? 'Dvojklik pro přidání nadpisu' : '')}
           </h3>
         )
       )}
@@ -115,6 +121,7 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
           value={data.content}
           onChange={handleContentChange}
           onBlur={handleContentBlur}
+          onClick={(e) => e.stopPropagation()}
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: '16px',
@@ -132,7 +139,12 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
         />
       ) : (
         <p
-          onDoubleClick={() => isSelected && setIsEditingContent(true)}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            if (isSelected) {
+              setIsEditingContent(true);
+            }
+          }}
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: '16px',
@@ -144,7 +156,7 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
             whiteSpace: 'pre-wrap',
           }}
         >
-          {data.content || (isSelected ? 'Klikni pro přidání textu' : '')}
+          {data.content || (isSelected ? 'Dvojklik pro přidání textu' : '')}
         </p>
       )}
       

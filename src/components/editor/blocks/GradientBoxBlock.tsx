@@ -67,6 +67,7 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
                 setIsEditingTitle(false);
               }
             }}
+            onClick={(e) => e.stopPropagation()}
             style={{
               fontFamily: "'Lora', serif",
               fontSize: '18px',
@@ -83,7 +84,12 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
           />
         ) : (
           <h4
-            onDoubleClick={() => isSelected && setIsEditingTitle(true)}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              if (isSelected) {
+                setIsEditingTitle(true);
+              }
+            }}
             style={{
               fontFamily: "'Lora', serif",
               fontSize: '18px',
@@ -103,6 +109,7 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
             value={data.content}
             onChange={(e) => onUpdate?.({ content: e.target.value })}
             onBlur={() => setIsEditingContent(false)}
+            onClick={(e) => e.stopPropagation()}
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: '15px',
@@ -121,7 +128,12 @@ export function GradientBoxBlock({ data, isSelected, onClick, onUpdate }: Props)
           />
         ) : (
           <p
-            onDoubleClick={() => isSelected && setIsEditingContent(true)}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              if (isSelected) {
+                setIsEditingContent(true);
+              }
+            }}
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: '15px',

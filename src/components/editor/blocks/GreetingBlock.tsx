@@ -43,6 +43,7 @@ export function GreetingBlock({ data, isSelected, onClick, onUpdate }: Props) {
               setIsEditing(false);
             }
           }}
+          onClick={(e) => e.stopPropagation()}
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: '16px',
@@ -57,7 +58,12 @@ export function GreetingBlock({ data, isSelected, onClick, onUpdate }: Props) {
         />
       ) : (
         <p
-          onDoubleClick={() => isSelected && setIsEditing(true)}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            if (isSelected) {
+              setIsEditing(true);
+            }
+          }}
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: '16px',

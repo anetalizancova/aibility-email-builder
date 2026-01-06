@@ -85,6 +85,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                   setEditingField(null);
                 }
               }}
+              onClick={(e) => e.stopPropagation()}
               style={{
                 fontFamily: "'Inter', Arial, sans-serif",
                 fontSize: '14px',
@@ -102,7 +103,10 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
             />
           ) : (
             <p
-              onDoubleClick={() => isSelected && setEditingField('metaInfo')}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                if (isSelected) setEditingField('metaInfo');
+              }}
               style={{
                 fontFamily: "'Inter', Arial, sans-serif",
                 fontSize: '14px',
@@ -133,6 +137,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                   setEditingField(null);
                 }
               }}
+              onClick={(e) => e.stopPropagation()}
               style={{
                 fontFamily: "'Lora', Georgia, serif",
                 fontSize: '26px',
@@ -149,7 +154,10 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
             />
           ) : (
             <h2
-              onDoubleClick={() => isSelected && setEditingField('title')}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                if (isSelected) setEditingField('title');
+              }}
               style={{
                 fontFamily: "'Lora', Georgia, serif",
                 fontSize: '26px',
@@ -172,6 +180,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
               value={data.description}
               onChange={(e) => onUpdate?.({ description: e.target.value })}
               onBlur={() => setEditingField(null)}
+              onClick={(e) => e.stopPropagation()}
               style={{
                 fontFamily: "'Inter', Arial, sans-serif",
                 fontSize: '16px',
@@ -189,7 +198,10 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
             />
           ) : (
             <div
-              onDoubleClick={() => isSelected && setEditingField('description')}
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                if (isSelected) setEditingField('description');
+              }}
               style={{
                 fontFamily: "'Inter', Arial, sans-serif",
                 fontSize: '16px',
@@ -220,6 +232,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                     setEditingField(null);
                   }
                 }}
+                onClick={(e) => e.stopPropagation()}
                 style={{
                   backgroundColor: '#000000',
                   borderRadius: '12px',
@@ -241,6 +254,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                 href={data.buttonUrl}
                 onDoubleClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
                   if (isSelected) setEditingField('buttonText');
                 }}
                 style={{
@@ -270,6 +284,7 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                   value={data.buttonUrl}
                   onChange={(e) => onUpdate?.({ buttonUrl: e.target.value })}
                   onBlur={() => setEditingField(null)}
+                  onClick={(e) => e.stopPropagation()}
                   placeholder="https://..."
                   style={{
                     border: '2px solid #ec4899',
@@ -282,7 +297,10 @@ export function EventBoxBlock({ data, isSelected, onClick, onUpdate }: Props) {
                 />
               ) : (
                 <span
-                  onDoubleClick={() => isSelected && setEditingField('buttonUrl')}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    if (isSelected) setEditingField('buttonUrl');
+                  }}
                   style={{ cursor: isSelected ? 'text' : 'pointer' }}
                 >
                   → {data.buttonUrl || (isSelected ? 'Dvojklik pro URL' : '')}

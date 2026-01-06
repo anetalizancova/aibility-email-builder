@@ -65,6 +65,7 @@ export function CTAButtonBlock({ data, isSelected, onClick, onUpdate }: Props) {
               setIsEditingText(false);
             }
           }}
+          onClick={(e) => e.stopPropagation()}
           style={{
             display: 'inline-block',
             padding: '14px 32px',
@@ -80,7 +81,10 @@ export function CTAButtonBlock({ data, isSelected, onClick, onUpdate }: Props) {
         />
       ) : (
         <span
-          onDoubleClick={() => isSelected && setIsEditingText(true)}
+          onDoubleClick={(e) => {
+            e.stopPropagation();
+            if (isSelected) setIsEditingText(true);
+          }}
           style={{
             display: 'inline-block',
             padding: '14px 32px',
@@ -110,6 +114,7 @@ export function CTAButtonBlock({ data, isSelected, onClick, onUpdate }: Props) {
                 setIsEditingUrl(false);
               }
             }}
+            onClick={(e) => e.stopPropagation()}
             placeholder="https://..."
             style={{
               fontFamily: "'Inter', sans-serif",
@@ -125,7 +130,10 @@ export function CTAButtonBlock({ data, isSelected, onClick, onUpdate }: Props) {
           />
         ) : (
           <div
-            onDoubleClick={() => isSelected && setIsEditingUrl(true)}
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              if (isSelected) setIsEditingUrl(true);
+            }}
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: '12px',
