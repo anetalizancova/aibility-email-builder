@@ -254,10 +254,16 @@ export function EmailCanvas({
                     key={block.id}
                     block={block}
                     isSelected={state.selectedBlockId === block.id}
-                    onSelect={() => onSelectBlock(block.id)}
+                    onSelect={() => {
+                      console.log('Selecting block:', block.id);
+                      onSelectBlock(block.id);
+                    }}
                     onRemove={() => onRemoveBlock(block.id)}
                     onDuplicate={() => onDuplicateBlock(block.id)}
-                    onUpdate={(data) => onUpdateBlock(block.id, data)}
+                    onUpdate={(data) => {
+                      console.log('Updating block:', block.id, 'with data:', data);
+                      onUpdateBlock(block.id, data);
+                    }}
                   />
                 ))}
               </div>

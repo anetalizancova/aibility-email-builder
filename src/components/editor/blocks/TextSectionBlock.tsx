@@ -38,13 +38,19 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onUpdate) {
+      console.log('Updating title:', e.target.value);
       onUpdate({ title: e.target.value });
+    } else {
+      console.warn('onUpdate is not provided!');
     }
   };
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (onUpdate) {
+      console.log('Updating content:', e.target.value);
       onUpdate({ content: e.target.value });
+    } else {
+      console.warn('onUpdate is not provided!');
     }
   };
 
@@ -93,9 +99,10 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
           />
         ) : (
           <h3
-            onDoubleClick={(e) => {
+            onClick={(e) => {
               e.stopPropagation();
               if (isSelected) {
+                console.log('Starting title edit, isSelected:', isSelected, 'onUpdate:', !!onUpdate);
                 setIsEditingTitle(true);
               }
             }}
@@ -110,7 +117,7 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
               minHeight: '28px',
             }}
           >
-            {data.title || (isSelected ? 'Dvojklik pro přidání nadpisu' : '')}
+            {data.title || (isSelected ? 'Klikni pro přidání nadpisu' : '')}
           </h3>
         )
       )}
@@ -139,9 +146,10 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
         />
       ) : (
         <p
-          onDoubleClick={(e) => {
+          onClick={(e) => {
             e.stopPropagation();
             if (isSelected) {
+              console.log('Starting content edit, isSelected:', isSelected, 'onUpdate:', !!onUpdate);
               setIsEditingContent(true);
             }
           }}
@@ -156,13 +164,13 @@ export function TextSectionBlock({ data, isSelected, onClick, onUpdate }: Props)
             whiteSpace: 'pre-wrap',
           }}
         >
-          {data.content || (isSelected ? 'Dvojklik pro přidání textu' : '')}
+          {data.content || (isSelected ? 'Klikni pro přidání textu' : '')}
         </p>
       )}
       
       {isSelected && (
         <div className="absolute top-2 right-2 bg-pink-500 text-white text-xs px-2 py-1 rounded">
-          Text • Dvojklik pro editaci
+          Text • Klikni pro editaci
         </div>
       )}
     </div>
