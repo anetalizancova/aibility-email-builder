@@ -244,12 +244,13 @@ function EditorContent() {
         <div className="flex-1 flex overflow-hidden">
           <BlockPalette onAddBlock={addBlock} />
           
-          <EmailCanvas
-            state={state}
-            onSelectBlock={selectBlock}
-            onRemoveBlock={removeBlock}
-            onDuplicateBlock={duplicateBlock}
-          />
+            <EmailCanvas
+              state={state}
+              onSelectBlock={selectBlock}
+              onRemoveBlock={removeBlock}
+              onDuplicateBlock={duplicateBlock}
+              onUpdateBlock={updateBlock}
+            />
           
           <BlockSettings
             block={selectedBlock}

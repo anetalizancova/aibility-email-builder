@@ -9,6 +9,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   EmailBlock,
+  BlockData,
   isGreetingData,
   isHeroImageData,
   isTextSectionData,
@@ -45,9 +46,10 @@ interface SortableBlockProps {
   onSelect: () => void;
   onRemove: () => void;
   onDuplicate: () => void;
+  onUpdate?: (data: Partial<BlockData>) => void;
 }
 
-function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate }: SortableBlockProps) {
+function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate, onUpdate }: SortableBlockProps) {
   const {
     attributes,
     listeners,
@@ -74,19 +76,19 @@ function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate }: S
     const { data } = block;
     
     if (isGreetingData(data)) {
-      return <GreetingBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+      return <GreetingBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     if (isHeroImageData(data)) {
       return <HeroImageBlock data={data} isSelected={isSelected} onClick={onSelect} />;
     }
     if (isTextSectionData(data)) {
-      return <TextSectionBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+      return <TextSectionBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     if (isGradientBoxData(data)) {
-      return <GradientBoxBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+      return <GradientBoxBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     if (isEventBoxData(data)) {
-      return <EventBoxBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+      return <EventBoxBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     if (isUseCaseBubbleData(data)) {
       return <UseCaseBubbleBlock data={data} isSelected={isSelected} onClick={onSelect} />;
@@ -95,7 +97,7 @@ function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate }: S
       return <VideoSectionBlock data={data} isSelected={isSelected} onClick={onSelect} />;
     }
     if (isCTAButtonData(data)) {
-      return <CTAButtonBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+      return <CTAButtonBlock data={data} isSelected={isSelected} onClick={onSelect} onUpdate={onUpdate} />;
     }
     if (isImageData(data)) {
       return <ImageBlock data={data} isSelected={isSelected} onClick={onSelect} />;
@@ -187,6 +189,7 @@ interface EmailCanvasProps {
   onSelectBlock: (id: string | null) => void;
   onRemoveBlock: (id: string) => void;
   onDuplicateBlock: (id: string) => void;
+  onUpdateBlock: (id: string, data: Partial<BlockData>) => void;
 }
 
 export function EmailCanvas({ 
@@ -194,6 +197,7 @@ export function EmailCanvas({
   onSelectBlock, 
   onRemoveBlock,
   onDuplicateBlock,
+  onUpdateBlock,
 }: EmailCanvasProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: 'email-canvas',
@@ -253,6 +257,7 @@ export function EmailCanvas({
                     onSelect={() => onSelectBlock(block.id)}
                     onRemove={() => onRemoveBlock(block.id)}
                     onDuplicate={() => onDuplicateBlock(block.id)}
+                    onUpdate={(data) => onUpdateBlock(block.id, data)}
                   />
                 ))}
               </div>
