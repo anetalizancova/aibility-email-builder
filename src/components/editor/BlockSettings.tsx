@@ -8,6 +8,9 @@ import {
   HeroImageData,
   TextSectionData,
   GradientBoxData,
+  EventBoxData,
+  UseCaseBubbleData,
+  VideoSectionData,
   CTAButtonData,
   ImageData,
   DividerData,
@@ -18,6 +21,9 @@ import {
   isHeroImageData,
   isTextSectionData,
   isGradientBoxData,
+  isEventBoxData,
+  isUseCaseBubbleData,
+  isVideoSectionData,
   isCTAButtonData,
   isImageData,
   isDividerData,
@@ -26,6 +32,7 @@ import {
   EmailState,
 } from '@/lib/email-state';
 import { themes, ThemeId } from '@/themes';
+import { uploadImage } from '@/lib/upload';
 
 interface BlockSettingsProps {
   block: EmailBlock | null;
@@ -52,10 +59,12 @@ export function BlockSettings({
   const handleFileUpload = async (blockId: string, file: File) => {
     setUploading(true);
     try {
-      const url = await onImageUpload(file);
+      // Use the new upload function
+      const url = await uploadImage(file);
       onUpdateBlock(blockId, { imageUrl: url, isUploaded: true } as Partial<ImageData>);
     } catch (error) {
       console.error('Upload failed:', error);
+      alert('Nahrání obrázku selhalo. Zkuste to znovu.');
     } finally {
       setUploading(false);
     }
@@ -312,6 +321,266 @@ export function BlockSettings({
                   🧡💗 Sunset
                 </button>
               </div>
+            </div>
+          </>
+        )}
+
+        {/* Event Box Settings */}
+        {isEventBoxData(data) && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Meta informace
+              </label>
+              <input
+                type="text"
+                value={(data as EventBoxData).metaInfo}
+                onChange={(e) => onUpdateBlock(id, { metaInfo: e.target.value })}
+                placeholder="Středa 8:00 • 50 minut • Zdarma"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Např. datum, čas, délka, cena
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nadpis
+              </label>
+              <input
+                type="text"
+                value={(data as EventBoxData).title}
+                onChange={(e) => onUpdateBlock(id, { title: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Popis
+              </label>
+              <textarea
+                value={(data as EventBoxData).description}
+                onChange={(e) => onUpdateBlock(id, { description: e.target.value })}
+                rows={6}
+                placeholder="První odstavec...&#10;&#10;Druhý odstavec..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Pro více odstavců použijte prázdný řádek
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Text tlačítka
+              </label>
+              <input
+                type="text"
+                value={(data as EventBoxData).buttonText}
+                onChange={(e) => onUpdateBlock(id, { buttonText: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                URL tlačítka
+              </label>
+              <input
+                type="text"
+                value={(data as EventBoxData).buttonUrl}
+                onChange={(e) => onUpdateBlock(id, { buttonUrl: e.target.value })}
+                placeholder="https://..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Pozice gradientu
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onUpdateBlock(id, { gradientPosition: 'left' })}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    (data as EventBoxData).gradientPosition === 'left'
+                      ? 'border-pink-500 bg-pink-50 text-pink-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Vlevo
+                </button>
+                <button
+                  onClick={() => onUpdateBlock(id, { gradientPosition: 'right' })}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    (data as EventBoxData).gradientPosition === 'right'
+                      ? 'border-pink-500 bg-pink-50 text-pink-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Vpravo
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Typ gradientu
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => onUpdateBlock(id, { gradientType: 'pink-blue' })}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    (data as EventBoxData).gradientType === 'pink-blue'
+                      ? 'border-pink-500 bg-pink-50 text-pink-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  💗💙 Pink-Blue
+                </button>
+                <button
+                  onClick={() => onUpdateBlock(id, { gradientType: 'blue-pink' })}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    (data as EventBoxData).gradientType === 'blue-pink'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  💙💗 Blue-Pink
+                </button>
+                <button
+                  onClick={() => onUpdateBlock(id, { gradientType: 'sunset' })}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    (data as EventBoxData).gradientType === 'sunset'
+                      ? 'border-orange-500 bg-orange-50 text-orange-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  🧡💗 Sunset
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Use Case Bubble Settings */}
+        {isUseCaseBubbleData(data) && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nadpis
+              </label>
+              <input
+                type="text"
+                value={(data as UseCaseBubbleData).title}
+                onChange={(e) => onUpdateBlock(id, { title: e.target.value })}
+                placeholder="HR: 6 hodin práce denně"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Výsledek
+              </label>
+              <input
+                type="text"
+                value={(data as UseCaseBubbleData).result}
+                onChange={(e) => onUpdateBlock(id, { result: e.target.value })}
+                placeholder="→ 1 hodina s AI"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Zarovnání
+              </label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onUpdateBlock(id, { alignment: 'left' })}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    (data as UseCaseBubbleData).alignment === 'left'
+                      ? 'border-pink-500 bg-pink-50 text-pink-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Vlevo
+                </button>
+                <button
+                  onClick={() => onUpdateBlock(id, { alignment: 'right' })}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                    (data as UseCaseBubbleData).alignment === 'right'
+                      ? 'border-pink-500 bg-pink-50 text-pink-700'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Vpravo
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                URL gradientu
+              </label>
+              <input
+                type="text"
+                value={(data as UseCaseBubbleData).gradientUrl}
+                onChange={(e) => onUpdateBlock(id, { gradientUrl: e.target.value })}
+                placeholder="https://..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+            </div>
+          </>
+        )}
+
+        {/* Video Section Settings */}
+        {isVideoSectionData(data) && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nadpis videa
+              </label>
+              <input
+                type="text"
+                value={(data as VideoSectionData).title}
+                onChange={(e) => onUpdateBlock(id, { title: e.target.value })}
+                placeholder="Jak to vypadá v praxi"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                YouTube URL
+              </label>
+              <input
+                type="text"
+                value={(data as VideoSectionData).videoUrl}
+                onChange={(e) => onUpdateBlock(id, { videoUrl: e.target.value })}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                URL thumbnailu
+              </label>
+              <input
+                type="text"
+                value={(data as VideoSectionData).thumbnailUrl}
+                onChange={(e) => onUpdateBlock(id, { thumbnailUrl: e.target.value })}
+                placeholder="https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Nebo použijte YouTube auto-thumbnail: https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Alt text
+              </label>
+              <input
+                type="text"
+                value={(data as VideoSectionData).altText}
+                onChange={(e) => onUpdateBlock(id, { altText: e.target.value })}
+                placeholder="Video thumbnail"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+              />
             </div>
           </>
         )}

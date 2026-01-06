@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📧 Email Builder
 
-## Getting Started
+Standalone email builder aplikace pro vytváření HTML emailů s drag & drop editorem, všemi designy a variantami.
 
-First, run the development server:
+## 🚀 Instalace
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Otevřete [http://localhost:3000/editor](http://localhost:3000/editor) v prohlížeči.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📦 Funkce
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Editor
+- **Drag & Drop** - Přetahování bloků z palety a přesouvání v emailu
+- **Editace** - Všechny bloky jsou editovatelné v pravém panelu
+- **Šablony** - Předpřipravené šablony (Newsletter, B2B)
+- **Export** - Stahování HTML nebo kopírování do clipboardu
 
-## Learn More
+### Komponenty
+- Greeting - Oslovení s personalizací
+- Hero Image - Hero obrázek
+- Text Section - Textová sekce
+- Gradient Box - Box s gradientem
+- Event Box - Box pro akce s split layoutem
+- Use Case Bubble - Bublina pro use case
+- Video Section - Sekce s YouTube videem
+- CTA Button - Call-to-action tlačítko
+- Image - Samostatný obrázek
+- Divider - Oddělovač
+- Spacer - Vertikální mezera
+- Footer - Footer s logem
 
-To learn more about Next.js, take a look at the following resources:
+### Upload obrázků
+Obrázky se nahrávají do `/public/uploads/` a získávají relativní URL. Pro Brevo je potřeba převést na absolutní URL.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Export HTML
+- Automatické zabalení emoji
+- Dark mode support (force light mode)
+- Outlook kompatibilita
+- Responzivní design
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎨 Designy
 
-## Deploy on Vercel
+### Newsletter
+Newsletter design s event boxy a split layoutem.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### B2B Email
+B2B email s use case bublinami a video sekcí.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔧 MCP Server
+
+Email Builder obsahuje MCP server pro integraci s Cursorem.
+
+### Instalace MCP serveru
+
+1. Přidejte do Cursor Settings > Features > Model Context Protocol:
+
+```json
+{
+  "mcpServers": {
+    "email-builder": {
+      "command": "node",
+      "args": ["email-builder/src/mcp-server/index.ts"],
+      "cwd": "/path/to/email-builder"
+    }
+  }
+}
+```
+
+2. Restartujte Cursor
+
+### Dostupné MCP funkce
+
+- `create_email` - Vytvoří nový email nebo načte šablonu
+- `add_block` - Přidá blok do emailu
+- `update_block` - Aktualizuje blok
+- `remove_block` - Odstraní blok
+- `generate_html` - Vygeneruje HTML
+- `get_email_state` - Vrátí aktuální stav
+- `list_templates` - Vypíše šablony
+
+## 📝 Cursor Rules
+
+Soubor `.cursorrules` obsahuje všechny tipy a best practices pro práci s HTML emaily. Cursor automaticky použije tyto pravidla při práci s emaily.
+
+## 🔮 Brevo integrace
+
+Struktura pro Brevo API je připravena v `src/lib/brevo.ts`. Když bude k dispozici API klíč, implementujte:
+
+1. Upload obrázků do Brevo CDN
+2. Odesílání emailů přes Brevo API
+3. Vytváření šablon v Brevo
+
+## 📁 Struktura projektu
+
+```
+email-builder/
+├── src/
+│   ├── app/
+│   │   └── editor/          # Editor stránka
+│   ├── components/
+│   │   └── editor/          # Editor komponenty
+│   ├── lib/
+│   │   ├── email-state.ts   # State management
+│   │   ├── generate-html.ts # HTML generování
+│   │   ├── upload.ts        # Upload obrázků
+│   │   ├── brevo.ts         # Brevo integrace
+│   │   └── designs/         # Šablony
+│   ├── mcp-server/          # MCP server
+│   └── themes/              # Barevné varianty
+├── public/
+│   └── uploads/             # Nahrané obrázky
+└── .cursorrules             # Cursor rules
+```
+
+## 💡 Tipy
+
+- Všechny emoji jsou automaticky zabalené do span tagů
+- Dark mode je vynucený na light mode
+- Outlook kompatibilita je zajištěna pomocí VML
+- Mobilní zobrazení je responzivní
+
+## 📚 Dokumentace
+
+Více informací najdete v `.cursorrules` souboru.

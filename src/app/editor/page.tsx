@@ -18,6 +18,7 @@ import { BlockPalette } from '@/components/editor/BlockPalette';
 import { EmailCanvas } from '@/components/editor/EmailCanvas';
 import { BlockSettings } from '@/components/editor/BlockSettings';
 import { generateEmailHTML } from '@/lib/generate-html';
+import { templates, getTemplate } from '@/lib/designs';
 
 function EditorContent() {
   const {
@@ -31,10 +32,13 @@ function EditorContent() {
     setTheme,
     setPreheader,
     getSelectedBlock,
+    loadState,
+    clearBlocks,
   } = useEmailState();
 
   const [activeId, setActiveId] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -78,14 +82,23 @@ function EditorContent() {
     }
   };
 
-  // Image upload handler (temporary - stores as base64)
+  // Image upload handler - now uses server upload
   const handleImageUpload = useCallback(async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
     });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to upload image');
+    }
+
+    const data = await response.json();
+    return data.url;
   }, []);
 
   // Copy HTML to clipboard
@@ -110,6 +123,22 @@ function EditorContent() {
     URL.revokeObjectURL(url);
   };
 
+  // Load template
+  const handleLoadTemplate = (templateId: string) => {
+    const template = getTemplate(templateId);
+    if (template) {
+      if (state.blocks.length > 0) {
+        if (confirm('Načtení šablony smaže aktuální email. Pokračovat?')) {
+          loadState(template.state);
+          setShowTemplates(false);
+        }
+      } else {
+        loadState(template.state);
+        setShowTemplates(false);
+      }
+    }
+  };
+
   const selectedBlock = getSelectedBlock();
 
   return (
@@ -131,6 +160,33 @@ function EditorContent() {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <div className="relative">
+              <button
+                onClick={() => setShowTemplates(!showTemplates)}
+                className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                📄 Šablony
+              </button>
+              {showTemplates && (
+                <div className="absolute top-full right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                  <div className="p-2">
+                    <div className="text-xs font-semibold text-gray-500 px-2 py-1 mb-1">
+                      Dostupné šablony
+                    </div>
+                    {templates.map((template) => (
+                      <button
+                        key={template.id}
+                        onClick={() => handleLoadTemplate(template.id)}
+                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded transition-colors"
+                      >
+                        <div className="font-medium">{template.name}</div>
+                        <div className="text-xs text-gray-500">{template.description}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <button
               onClick={handleCopyHTML}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${

@@ -36,3 +36,6 @@ export function GreetingBlock({ data, isSelected, onClick }: Props) {
   );
 }
 
+
+
+

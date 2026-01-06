@@ -73,3 +73,6 @@ export function FooterBlock({ data, isSelected, onClick }: Props) {
   );
 }
 
+
+
+

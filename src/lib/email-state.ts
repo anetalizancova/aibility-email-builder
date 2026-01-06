@@ -7,6 +7,9 @@ export type BlockType =
   | 'hero-image'
   | 'text-section'
   | 'gradient-box'
+  | 'event-box'
+  | 'use-case-bubble'
+  | 'video-section'
   | 'cta-button'
   | 'image'
   | 'divider'
@@ -65,12 +68,39 @@ export interface FooterData {
   address: string;
 }
 
+export interface EventBoxData {
+  metaInfo: string; // e.g., "Středa 8:00 • 50 minut • Zdarma"
+  title: string;
+  description: string; // can be multiple paragraphs, separated by \n
+  buttonText: string;
+  buttonUrl: string;
+  gradientPosition: 'left' | 'right'; // where the gradient side is
+  gradientType: 'pink-blue' | 'blue-pink' | 'sunset';
+}
+
+export interface UseCaseBubbleData {
+  title: string;
+  result: string;
+  alignment: 'left' | 'right';
+  gradientUrl: string;
+}
+
+export interface VideoSectionData {
+  videoUrl: string;
+  thumbnailUrl: string;
+  title: string;
+  altText: string;
+}
+
 // Union type for all block data
 export type BlockData = 
   | GreetingData
   | HeroImageData 
   | TextSectionData 
   | GradientBoxData 
+  | EventBoxData
+  | UseCaseBubbleData
+  | VideoSectionData
   | CTAButtonData 
   | ImageData 
   | DividerData 
@@ -116,6 +146,30 @@ export const getDefaultBlockData = (type: BlockType): BlockData => {
         content: 'Hlavní sdělení v barevném boxu.',
         bulletPoints: [],
         gradientType: 'pink-blue',
+      };
+    case 'event-box':
+      return {
+        metaInfo: 'Středa 8:00 • 50 minut • Zdarma',
+        title: 'AI Morning Show',
+        description: 'Původně to byl náš interní meeting, kde si v týmu sdílíme, co nám s AI funguje, co ne a jak žijeme AI first.\n\nPak nás napadlo: proč si to nechávat pro sebe? Žádná teorie, žádné buzzwordy. Jen reálné ukázky, co děláme, jak to děláme a co se nám (ne)povedlo.',
+        buttonText: 'Připojte se zdarma',
+        buttonUrl: 'https://aibility.cz',
+        gradientPosition: 'right',
+        gradientType: 'pink-blue',
+      };
+    case 'use-case-bubble':
+      return {
+        title: 'HR: 6 hodin práce denně',
+        result: '→ 1 hodina s AI',
+        alignment: 'left',
+        gradientUrl: 'https://d8i8u.img.bh.d.sendibt3.com/im/sh/bU7VO-uYhPWX.png?u=WtVElij8PJZGdmbTqTmqLMTcgUKHKFEd',
+      };
+    case 'video-section':
+      return {
+        videoUrl: 'https://www.youtube.com/watch?v=example',
+        thumbnailUrl: 'https://img.youtube.com/vi/example/maxresdefault.jpg',
+        title: 'Jak to vypadá v praxi',
+        altText: 'Video thumbnail',
       };
     case 'cta-button':
       return {
@@ -172,6 +226,21 @@ export const blockLabels: Record<BlockType, { name: string; icon: string; descri
     name: 'Barevný box',
     icon: '🎨',
     description: 'Zvýrazněný box s gradientem',
+  },
+  'event-box': {
+    name: 'Event box',
+    icon: '📅',
+    description: 'Box pro akce s gradientem',
+  },
+  'use-case-bubble': {
+    name: 'Use case bublina',
+    icon: '💬',
+    description: 'Bublina pro use case (zleva/zprava)',
+  },
+  'video-section': {
+    name: 'Video sekce',
+    icon: '🎥',
+    description: 'Sekce s YouTube videem',
   },
   'cta-button': {
     name: 'Tlačítko',
@@ -354,7 +423,16 @@ export const isTextSectionData = (data: BlockData): data is TextSectionData =>
   'title' in data && 'content' in data && 'showTitle' in data;
 
 export const isGradientBoxData = (data: BlockData): data is GradientBoxData =>
-  'bulletPoints' in data && 'gradientType' in data;
+  'bulletPoints' in data && 'gradientType' in data && !('metaInfo' in data);
+
+export const isEventBoxData = (data: BlockData): data is EventBoxData =>
+  'metaInfo' in data && 'gradientPosition' in data && 'buttonText' in data;
+
+export const isUseCaseBubbleData = (data: BlockData): data is UseCaseBubbleData =>
+  'title' in data && 'result' in data && 'alignment' in data && 'gradientUrl' in data;
+
+export const isVideoSectionData = (data: BlockData): data is VideoSectionData =>
+  'videoUrl' in data && 'thumbnailUrl' in data && 'title' in data && 'altText' in data;
 
 export const isCTAButtonData = (data: BlockData): data is CTAButtonData =>
   'text' in data && 'url' in data && 'style' in data;

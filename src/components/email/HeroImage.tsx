@@ -33,3 +33,6 @@ export function heroImageToHTML(props: HeroImageProps): string {
 </tr>`;
 }
 
+
+
+

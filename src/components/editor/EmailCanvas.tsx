@@ -13,6 +13,9 @@ import {
   isHeroImageData,
   isTextSectionData,
   isGradientBoxData,
+  isEventBoxData,
+  isUseCaseBubbleData,
+  isVideoSectionData,
   isCTAButtonData,
   isImageData,
   isDividerData,
@@ -26,6 +29,9 @@ import {
   HeroImageBlock,
   TextSectionBlock,
   GradientBoxBlock,
+  EventBoxBlock,
+  UseCaseBubbleBlock,
+  VideoSectionBlock,
   CTAButtonBlock,
   ImageBlock,
   DividerBlock,
@@ -71,6 +77,15 @@ function SortableBlock({ block, isSelected, onSelect, onRemove, onDuplicate }: S
     }
     if (isGradientBoxData(data)) {
       return <GradientBoxBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+    }
+    if (isEventBoxData(data)) {
+      return <EventBoxBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+    }
+    if (isUseCaseBubbleData(data)) {
+      return <UseCaseBubbleBlock data={data} isSelected={isSelected} onClick={onSelect} />;
+    }
+    if (isVideoSectionData(data)) {
+      return <VideoSectionBlock data={data} isSelected={isSelected} onClick={onSelect} />;
     }
     if (isCTAButtonData(data)) {
       return <CTAButtonBlock data={data} isSelected={isSelected} onClick={onSelect} />;

@@ -31,3 +31,6 @@ export function textSectionToHTML(content: string, theme: Theme, centered = fals
 </tr>`;
 }
 
+
+
+

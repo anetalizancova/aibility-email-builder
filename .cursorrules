@@ -1,0 +1,220 @@
+# Email Builder - Cursor Rules
+
+Tento soubor obsahuje pravidla a tipy pro práci s Email Builderem v Cursoru.
+
+## 📧 HTML Email Best Practices
+
+### Emoji v emailech
+
+**Problém:** Emoji se zalomí na nový řádek, odtrhne se od textu, nebo se tečka objeví na dalším řádku.
+
+**Řešení:** Zabalit emoji do `<span>` s `inline-block` stylem:
+
+```html
+<span style="display:inline-block; vertical-align:middle; line-height:1; font-size:1.1em;">🎄</span>
+```
+
+**Klíčové vlastnosti:**
+- `display:inline-block` — emoji se chová jako blok a nezalomí se od předchozího textu
+- `vertical-align:middle` — vertikálně zarovnané na střed řádku
+- `line-height:1` — minimální výška řádku, aby nezvětšovalo mezery
+- `font-size:1.1em` — trochu větší emoji pro lepší viditelnost
+
+**Důležité:** Tečka/text musí být PŘED span, ne uvnitř!
+
+```html
+<!-- ✅ Správně -->
+<p>Těšíme se na vás! <span style="display:inline-block; vertical-align:middle; line-height:1; font-size:1.1em;">🚀</span></p>
+
+<!-- ❌ Špatně -->
+<p>Těšíme se na vás 🚀!</p>
+```
+
+### Mobilní zobrazení
+
+**Problém:** Text je na mobilu příliš malý.
+
+**Řešení:** Přidat viewport meta tag a media queries:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  @media screen and (max-width: 600px) {
+    .wrapper { width: 100% !important; }
+    .mobile-full { width: 100% !important; display: block !important; }
+  }
+</style>
+```
+
+### Dark Mode Support
+
+**Problém:** Email klienti automaticky invertují barvy v dark mode.
+
+**Řešení:** Force light mode pomocí meta tagů a CSS:
+
+```html
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+
+<style>
+  :root {
+    color-scheme: light only !important;
+  }
+  body {
+    color-scheme: light only !important;
+    background-color: #f3f4ff !important;
+    color: #020617 !important;
+  }
+</style>
+```
+
+### Outlook kompatibilita
+
+**Problém:** Outlook používá Word rendering engine, který nepodporuje moderní CSS.
+
+**Řešení:**
+- Používat tabulky místo divů
+- VML pro tlačítka (v:roundrect)
+- Inline styly místo CSS tříd
+- Data atributy pro dark mode: `data-ogsc`, `data-ogsb`
+
+### Fonty
+
+**Brandové fonty:**
+- Hlavní text: `'Inter', Arial, sans-serif`
+- Nadpisy: `'Lora', Georgia, serif`
+
+**Import:**
+```html
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+```
+
+### Barvy
+
+**Brandové barvy:**
+- Text: `#020617`
+- Pozadí: `#ffffff`
+- Background: `#f3f4ff`
+- CTA buttony: `#000000` (pozadí), `#ffffff` (text)
+- Linky: `#FF5AFF` nebo `#1C58FF`
+- Gradient: Pink `#ff7ad9`, Blue `#6a9bff`, Orange `#ffb86b`
+
+### Spacing
+
+- Mezi sekcemi: `20px` nebo `32px`
+- Padding boxů: `28px 24px` (hlavní), `16px 18px` (bubliny)
+- Padding containeru: `32px` nebo `40px`
+
+### Orphans a Widows
+
+Všechny texty by měly mít `orphans: 2; widows: 2;` pro lepší čitelnost:
+
+```html
+<p style="orphans: 2; widows: 2;">Text...</p>
+```
+
+## 🎨 Email Builder Komponenty
+
+### Dostupné bloky
+
+1. **Greeting** - Oslovení s personalizací `{{ contact.OSLOVENI }}`
+2. **Hero Image** - Hero obrázek nahoře
+3. **Text Section** - Textová sekce s volitelným nadpisem
+4. **Gradient Box** - Box s gradientem pro důležité informace
+5. **Event Box** - Box pro akce s split layoutem (gradient vlevo/vpravo)
+6. **Use Case Bubble** - Bublina pro use case (zarovnání vlevo/vpravo)
+7. **Video Section** - Sekce s YouTube videem
+8. **CTA Button** - Call-to-action tlačítko (gradient nebo solid)
+9. **Image** - Samostatný obrázek
+10. **Divider** - Oddělovač
+11. **Spacer** - Vertikální mezera
+12. **Footer** - Footer s logem a informacemi
+
+### Použití komponent
+
+Všechny komponenty jsou v `src/components/editor/blocks/` a automaticky se renderují v editoru.
+
+### Generování HTML
+
+HTML se generuje pomocí `generateEmailHTML()` funkce v `src/lib/generate-html.ts`.
+
+Funkce automaticky:
+- Zabalí emoji do správných span tagů
+- Přidá dark mode support
+- Přidá Outlook kompatibilitu
+- Použije správné fonty a barvy
+
+### Upload obrázků
+
+Obrázky se nahrávají do `/public/uploads/` pomocí API route `/api/upload`.
+
+Upload funkce:
+- Validuje typ souboru (pouze obrázky)
+- Validuje velikost (max 5MB)
+- Generuje unikátní název souboru
+- Vrací relativní URL (`/uploads/filename.jpg`)
+
+Pro Brevo kompatibilitu je potřeba převést relativní URL na absolutní URL před odesláním.
+
+### Designy a šablony
+
+Šablony jsou v `src/lib/designs/index.ts`:
+
+- **newsletterTemplate** - Newsletter design s event boxy
+- **b2bTemplate** - B2B email s use case bublinami
+
+Šablony lze načíst pomocí `getTemplate(id)` funkce.
+
+### Barevné varianty
+
+V `src/themes/index.ts` jsou definované barevné varianty:
+
+- `light-pink-blue` - Světlý design s růžovo-modrým gradientem
+- `light-sunset` - Světlý design s růžovo-modro-oranžovým gradientem
+- `dark-pink-blue` - Tmavý design (zatím nepodporováno)
+- `dark-sunset` - Tmavý design (zatím nepodporováno)
+
+## 💡 Tipy pro práci s builderem
+
+1. **Drag & Drop**: Bloky lze přetahovat z palety a přesouvat v emailu
+2. **Duplikování**: Klikněte na blok a použijte tlačítko duplikovat
+3. **Mazání**: Klikněte na blok a použijte tlačítko smazat
+4. **Nastavení**: Klikněte na blok pro zobrazení nastavení v pravém panelu
+5. **Export**: Použijte tlačítko "Stáhnout HTML" nebo "Kopírovat HTML"
+
+## 🚀 Příklady použití
+
+### Vytvoření nového emailu
+
+1. Otevřete editor na `/editor`
+2. Přidejte bloky z levého panelu
+3. Upravte obsah v pravém panelu
+4. Exportujte HTML
+
+### Použití šablony
+
+```typescript
+import { getTemplate } from '@/lib/designs';
+import { useEmailState } from '@/lib/email-state';
+
+const template = getTemplate('newsletter');
+const { loadState } = useEmailState();
+loadState(template.state);
+```
+
+### Přidání nového bloku
+
+1. Vytvořte interface v `email-state.ts`
+2. Přidejte do `BlockType` union
+3. Vytvořte komponentu v `blocks/`
+4. Přidejte generování HTML v `generate-html.ts`
+5. Přidejte nastavení v `BlockSettings.tsx`
+
+## 📝 Poznámky
+
+- Všechny emoji jsou automaticky zabalené do span tagů při generování HTML
+- Dark mode je vynucený na light mode pro konzistentní zobrazení
+- Outlook kompatibilita je zajištěna pomocí VML a data atributů
+- Mobilní zobrazení je responzivní díky media queries
+

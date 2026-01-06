@@ -86,3 +86,6 @@ export function GradientBoxBlock({ data, isSelected, onClick }: Props) {
   );
 }
 
+
+
+
