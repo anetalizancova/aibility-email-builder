@@ -155,8 +155,6 @@ export const mcpTools = [
 // Handle tool calls
 // server.setRequestHandler(CallToolRequestSchema, async (request) => {
 export async function handleMcpToolCall(name: string, args: any) {
-  const { name, arguments: args } = request.params;
-
   try {
     switch (name) {
       case 'create_email': {
