@@ -5,12 +5,22 @@ import { daysUntil } from "../lib/dateUtils";
 const DEFAULT_REMINDER_DAYS = "10";
 const DEFAULT_TIME_ZONE = "Europe/Prague";
 
-const parseReminderDays = (value: string | undefined): number[] => {
-  const raw = value?.trim() || DEFAULT_REMINDER_DAYS;
-  return raw
-    .split(",")
-    .map((item) => Number(item.trim()))
-    .filter((num) => Number.isInteger(num) && num > 0);
+const parseReminderWindowDays = (value: string | undefined): number => {
+  const raw = value?.trim();
+  if (!raw) return Number(DEFAULT_REMINDER_DAYS);
+
+  if (raw.includes(",")) {
+    const parsed = raw
+      .split(",")
+      .map((item) => Number(item.trim()))
+      .filter((num) => Number.isInteger(num) && num > 0);
+    if (parsed.length) return Math.max(...parsed);
+  }
+
+  const asNumber = Number(raw);
+  return Number.isInteger(asNumber) && asNumber > 0
+    ? asNumber
+    : Number(DEFAULT_REMINDER_DAYS);
 };
 
 const buildEventKey = (url: string, date: Date) => {
@@ -82,7 +92,7 @@ export default async function handler(req: any, res: any) {
 
   try {
     const timeZone = process.env.TZ || DEFAULT_TIME_ZONE;
-    const reminderDays = parseReminderDays(process.env.REMINDER_DAYS);
+    const reminderWindowDays = parseReminderWindowDays(process.env.REMINDER_DAYS);
     const response = await fetch("https://aibility.cz/webinare/nejblizsi-akce");
     if (!response.ok) {
       throw new Error(`Failed to fetch events: ${response.status}`);
@@ -94,10 +104,10 @@ export default async function handler(req: any, res: any) {
 
     for (const event of events) {
       const daysRemaining = daysUntil(event.date, timeZone);
-      if (!reminderDays.includes(daysRemaining)) continue;
+      if (daysRemaining < 0 || daysRemaining > reminderWindowDays) continue;
 
       const eventKey = buildEventKey(event.url, event.date);
-      const dayKey = `reminder:sent:${daysRemaining}:${eventKey}`;
+      const dayKey = `reminder:sent:${eventKey}`;
 
       const redis = await getRedisClient();
       if (redis) {

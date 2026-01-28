@@ -30,17 +30,17 @@ export const scrapeEvents = (html: string): ScrapedEvent[] => {
   const events: ScrapedEvent[] = [];
   const seen = new Set<string>();
 
-  $("a[href*=\"/webinare/\"]").each((_, el) => {
+  $("a").each((_, el) => {
     const href = $(el).attr("href");
     if (!href) return;
     if (href.includes("/webinare/nejblizsi-akce")) return;
 
-    const url = href.startsWith("http") ? href : `https://aibility.cz${href}`;
-    if (seen.has(url)) return;
-
     const text = cleanWhitespace($(el).text());
     const dateMatch = text.match(/\d{1,2}\.\s*[^\s]+\s*\d{4}/i);
     if (!dateMatch) return;
+
+    const url = new URL(href, "https://aibility.cz/webinare/nejblizsi-akce").toString();
+    if (seen.has(url)) return;
 
     const dateText = dateMatch[0];
     const date = parseCzechDate(dateText);
