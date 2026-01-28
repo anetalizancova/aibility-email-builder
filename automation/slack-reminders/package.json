@@ -5,7 +5,8 @@
   "description": "Slack reminders for Aibility webinars",
   "main": "api/cron.ts",
   "scripts": {
-    "dev": "node -e \"console.log('Use Vercel dev or deploy to run cron.')\""
+    "dev": "node -e \"console.log('Use Vercel dev or deploy to run cron.')\"",
+    "build": "node -e \"console.log('No build step required.')\""
   },
   "dependencies": {
     "@vercel/kv": "^2.0.0",
