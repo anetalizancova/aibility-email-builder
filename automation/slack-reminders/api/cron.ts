@@ -1,4 +1,4 @@
-import { kv } from "@vercel/kv";
+import { createClient } from "redis";
 import { scrapeEvents } from "../lib/scrapeEvents";
 import { daysUntil } from "../lib/dateUtils";
 
@@ -19,8 +19,32 @@ const buildEventKey = (url: string, date: Date) => {
   return `${dateIso}::${urlObj.pathname}`;
 };
 
-const isKvConfigured = () =>
-  Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+const REDIS_TTL_SECONDS = 60 * 60 * 24 * 365;
+
+let redisClient: ReturnType<typeof createClient> | null = null;
+let redisConnecting: Promise<void> | null = null;
+
+const getRedisClient = async () => {
+  const url =
+    process.env.KV_REST_API_REDIS_URL ||
+    process.env.REDIS_URL ||
+    process.env.UPSTASH_REDIS_REST_URL;
+  if (!url) return null;
+
+  if (!redisClient) {
+    redisClient = createClient({ url });
+    redisClient.on("error", (error) => {
+      console.error("Redis connection error", error);
+    });
+    redisConnecting = redisClient.connect();
+  }
+
+  if (redisConnecting) {
+    await redisConnecting;
+  }
+
+  return redisClient;
+};
 
 const buildSlackMessage = (title: string, dateText: string, url: string, day: number) => {
   return [
@@ -75,8 +99,9 @@ export default async function handler(req: any, res: any) {
       const eventKey = buildEventKey(event.url, event.date);
       const dayKey = `reminder:sent:${daysRemaining}:${eventKey}`;
 
-      if (isKvConfigured()) {
-        const alreadySent = await kv.get(dayKey);
+      const redis = await getRedisClient();
+      if (redis) {
+        const alreadySent = await redis.get(dayKey);
         if (alreadySent) continue;
       }
 
@@ -89,8 +114,10 @@ export default async function handler(req: any, res: any) {
       await sendSlackMessage(text);
       sent.push({ title: event.title, day: daysRemaining });
 
-      if (isKvConfigured()) {
-        await kv.set(dayKey, new Date().toISOString());
+      if (redis) {
+        await redis.set(dayKey, new Date().toISOString(), {
+          EX: REDIS_TTL_SECONDS
+        });
       }
     }
 

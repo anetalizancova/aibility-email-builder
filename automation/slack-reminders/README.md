@@ -7,7 +7,7 @@ Automated Slack reminders for events listed at:
 - Vercel Cron calls `/api/cron` (default: every 3 days at 08:00).
 - The function scrapes the event list, parses dates, and checks if any event
   is exactly N days away.
-- If a match exists, it posts a Slack message and stores a KV flag so it
+- If a match exists, it posts a Slack message and stores a Redis flag so it
   does not send the same reminder twice.
 
 ## Slack webhook setup
@@ -23,12 +23,14 @@ there instead (no new app slot needed).
 
 ## Vercel setup
 1. Create a new Vercel project with root at `automation/slack-reminders`
-2. Add Vercel KV to the project (Storage → KV)
-3. Add environment variables:
+2. Create a Redis database in Vercel (Storage → Create → Redis)
+3. Connect the Redis database to the project and set the prefix to
+   `KV_REST_API` so it creates `KV_REST_API_REDIS_URL`
+4. Add environment variables:
    - `SLACK_WEBHOOK_URL`
    - `REMINDER_DAYS` (optional, default `10`, example `10,14`)
    - `TZ` (optional, default `Europe/Prague`)
-4. Deploy
+5. Deploy
 
 ## Cron schedule
 Edit `vercel.json` to change the schedule:
@@ -44,3 +46,4 @@ Example: every day at 08:00
 - The scraper looks for links under `/webinare/` and parses Czech date formats
   like `28. ledna 2026`.
 - If the page structure changes, adjust `lib/scrapeEvents.ts`.
+- Redis URL is read from `KV_REST_API_REDIS_URL` (or `REDIS_URL` if set).
