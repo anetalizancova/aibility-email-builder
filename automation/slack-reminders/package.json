@@ -1,0 +1,17 @@
+{
+  "name": "aibility-slack-reminders",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Slack reminders for Aibility webinars",
+  "main": "api/cron.ts",
+  "scripts": {
+    "dev": "node -e \"console.log('Use Vercel dev or deploy to run cron.')\""
+  },
+  "dependencies": {
+    "@vercel/kv": "^2.0.0",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
