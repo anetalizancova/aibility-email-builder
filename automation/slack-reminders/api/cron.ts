@@ -118,7 +118,7 @@ export default async function handler(req: any, res: any) {
 
     for (const event of events) {
       const daysRemaining = daysUntil(event.date, timeZone);
-      if (daysRemaining < 0 || daysRemaining > reminderWindowDays) continue;
+      if (daysRemaining <= 0 || daysRemaining > reminderWindowDays) continue;
 
       const eventKey = buildEventKey(event.url, event.date);
       const dayKey = `reminder:sent:${eventKey}`;
