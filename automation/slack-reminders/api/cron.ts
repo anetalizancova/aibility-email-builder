@@ -5,6 +5,20 @@ import { daysUntil } from "../lib/dateUtils";
 const DEFAULT_REMINDER_DAYS = "10";
 const DEFAULT_TIME_ZONE = "Europe/Prague";
 
+const resolveTimeZone = (value: string | undefined): string => {
+  if (!value) return DEFAULT_TIME_ZONE;
+  const trimmed = value.trim();
+  if (!trimmed) return DEFAULT_TIME_ZONE;
+
+  const normalized = trimmed.startsWith(":") ? trimmed.slice(1) : trimmed;
+  try {
+    new Intl.DateTimeFormat("en-CA", { timeZone: normalized });
+    return normalized;
+  } catch {
+    return DEFAULT_TIME_ZONE;
+  }
+};
+
 const parseReminderWindowDays = (value: string | undefined): number => {
   const raw = value?.trim();
   if (!raw) return Number(DEFAULT_REMINDER_DAYS);
@@ -91,7 +105,7 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const timeZone = process.env.TZ || DEFAULT_TIME_ZONE;
+    const timeZone = resolveTimeZone(process.env.TZ);
     const reminderWindowDays = parseReminderWindowDays(process.env.REMINDER_DAYS);
     const response = await fetch("https://aibility.cz/webinare/nejblizsi-akce");
     if (!response.ok) {
