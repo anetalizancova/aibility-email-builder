@@ -9,7 +9,7 @@ Díky, že jste byli u toho! | Vibe coding v praxi 10.3.2026
 
 **Díky, že jste byli u toho!**
 
-Díky, že jste s námi strávili čas na webináři **Vibe coding v praxi**. Společně jsme prošli cestu od jednoduchých artefaktů až po pokročilé nástroje pro tvorbu aplikací a webů pomocí AI. Ukázali jsme si konkrétní workflow a praktické tipy, jak dostat vaše nápady rychle do praxe.
+Díky, že jste s námi strávili čas na webináři **Vibe coding v praxi**. Společně jsme prošli cestu od jednoduchých artefaktů v chatbotech až po pokročilé nástroje pro lokální vývoj a ukázali si, jak dostat vaše nápady rychle do produkce.
 
 Pokud jste nestihli všechno nebo si chcete připomenout konkrétní body, tady je vše důležité.
 
@@ -37,20 +37,20 @@ https://soundcloud.com/tym-aibility/vibe-coding-v-praxi-10-3-2026/s-LMIKhI5H2Ct?
 
 ## Co jsme probrali:
 
-**Tři úrovně vibe codingu**
-- Představili jsme si postupný přechod od artefaktů v chatbotech (Claude, ChatGPT) přes AI buildery (Lovable, Bolt) až po pokročilé nástroje jako Cursor. Každá úroveň má své výhody podle toho, co potřebujete vytvořit.
+**Artefakty v chatbotech**
+- Ukázali jsme si, jak vytvářet jednoduché aplikace přímo v Claude, ChatGPT nebo Gemini pomocí artefaktů. Tyto nástroje umožňují rychlé prototypování a sdílení aplikací bez znalosti programování.
 
-**Praktické ukázky aplikací**
-- Vytvořili jsme kalkulačku složeného úročení, cash flow dashboard a další užitečné nástroje. Ukázali jsme, jak z jednoduchého promptu vznikne funkční aplikace, kterou můžete sdílet nebo stáhnout.
+**AI buildery pro pokročilé projekty**
+- Probrali jsme nástroje jako Lovable, Bolt nebo Replit, které umožňují vytvářet komplexnější aplikace s databázemi, platbami a vlastními doménami. Tyto nástroje nabízejí větší flexibilitu a možnost publikování na vlastních doménách.
+
+**Lokální vývoj s Cursorem**
+- Představili jsme pokročilé nástroje jako Cursor pro asistovaný vývoj, které pracují s lokálními soubory a umožňují bezpečné zpracování citlivých dat. Tyto nástroje jsou ideální pro týmovou spolupráci a složitější projekty.
 
 **GitHub a Vercel workflow**
-- Naučili jsme se, jak propojit projekty s GitHubem pro zálohování a verzování kódu. Ukázali jsme publikování přes Vercel na vlastní doménu a automatizaci celého procesu od návrhu po nasazení.
+- Ukázali jsme, jak propojit vaše projekty s GitHubem pro zálohování a verzování kódu a jak využít Vercel pro automatické publikování změn. Tento workflow umožňuje profesionální správu projektů a týmovou spolupráci.
 
-**Bezpečnost a lokální zpracování**
-- Probrali jsme, jak pracovat s citlivými daty lokálně bez odesílání do cloudu. Ukázali jsme security kontroly a důležitost testování výstupů před publikováním aplikací.
-
-**PRD a metaprompting**
-- Představili jsme Product Requirements Document jako způsob, jak lépe specifikovat požadavky na aplikace. Ukázali jsme, jak nechat AI vytvořit kvalitní prompt místo psaní vlastního.
+**Správný kontext pro AI**
+- Probrali jsme důležitost kvalitních promptů a PRD (Product Requirements Document) pro efektivní komunikaci s AI. Ukázali jsme, jak využít meta-prompting a specializované GPTs pro vytváření lepších zadání.
 
 ---
 
