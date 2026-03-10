@@ -64,7 +64,9 @@ async function listTranscripts() {
 
 async function downloadTranscript(filename) {
   const token = process.env.GITHUB_TOKEN;
-  const url = `https://api.github.com/repos/${CONTENT_REPO}/contents/${TRANSCRIPT_DIR}/${encodeURIComponent(filename)}`;
+  const encodedPath = `${TRANSCRIPT_DIR}/${filename}`.split('/').map(encodeURIComponent).join('/');
+  const url = `https://api.github.com/repos/${CONTENT_REPO}/contents/${encodedPath}`;
+  console.log(`  📎 Fetching: ${url}`);
   const res = await fetch(url, {
     headers: {
       Authorization: `token ${token}`,
@@ -72,7 +74,10 @@ async function downloadTranscript(filename) {
     },
   });
 
-  if (!res.ok) throw new Error(`Failed to download transcript: ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.text();
+    throw new Error(`Failed to download transcript: ${res.status} - ${errBody.substring(0, 200)}`);
+  }
   return await res.text();
 }
 

@@ -29,7 +29,7 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CONTENT_REPO_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           CONTENT_REPO: aibilitycz/content
           TRANSCRIPT_DIR: prepisy-webinaru-edu
